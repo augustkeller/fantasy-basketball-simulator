@@ -1,4 +1,4 @@
-[
+const rawPlayers = [
   {
     "Player": "A.C. Green",
     "Season": "1988-89",
@@ -6900,3 +6900,18 @@
     "PTS": 1681
   }
 ]
+
+export const players = rawPlayers.map((player, index) => ({
+  id: index,
+  name: player.Player,
+  position: player.Pos,
+  season: player.Season,
+  team: player.Tm,
+  stats: {
+    points: player.PTS,
+    rebounds: player.TRB,
+    assists: player.AST,
+    steals: player.STL,
+    blocks: player.BLK
+  }
+}));
