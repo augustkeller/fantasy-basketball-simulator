@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { players } from "../data/players";
 
 export default function Home() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
+  const [randomPlayers, setRandomPlayers] = useState([]);
+
+  // Pick 20 random players when component mounts
+  useEffect(() => {
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    setRandomPlayers(shuffled.slice(0, 20));
+  }, []);
 
   function togglePlayer(player) {
     setSelected(prev =>
@@ -27,7 +34,7 @@ export default function Home() {
       <h1>Select 5 Players</h1>
 
       <ul>
-        {players.slice(0, 20).map(player => (
+        {randomPlayers.map(player => (
           <li key={player.id}>
             <label>
               <input
