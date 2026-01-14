@@ -1,16 +1,16 @@
 import { useLocation, Navigate } from "react-router-dom";
+import { players } from "../data/players";
 
-export default function Results() {
-  const { state } = useLocation();
+/* ---------------- Utility Helpers ---------------- */
 
-  if (!state?.team) {
-    return <Navigate to="/" replace />;
-  }
+function getRandomPlayers(pool, count, excludeIds = []) {
+  const filtered = pool.filter(p => !excludeIds.includes(p.id));
+  const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
 
-  const userTeam = state.team;
-
-  // Aggregate totals
-  const totals = userTeam.reduce(
+function calculateTeamTotals(team) {
+  const totals = team.reduce(
     (acc, player) => {
       acc.fg += player.stats.fg;
       acc.fga += player.stats.fga;
@@ -40,67 +40,116 @@ export default function Results() {
     }
   );
 
-  // Weighted percentages
-  const teamFgPercent =
-    totals.fga > 0 ? (totals.fg / totals.fga).toFixed(3) : "0.000";
+  return {
+    ...totals,
+    fgPercent: totals.fga ? (totals.fg / totals.fga).toFixed(3) : "0.000",
+    ftPercent: totals.fta ? (totals.ft / totals.fta).toFixed(3) : "0.000"
+  };
+}
 
-  const teamFtPercent =
-    totals.fta > 0 ? (totals.ft / totals.fta).toFixed(3) : "0.000";
+/* ---------------- Results Page ---------------- */
+
+export default function Results() {
+  const { state } = useLocation();
+
+  if (!state?.team) {
+    return <Navigate to="/" replace />;
+  }
+
+  const userTeam = state.team;
+
+  // Prevent overlap between teams
+  const userIds = userTeam.map(p => p.id);
+
+  // Generate opponent team
+  const opponentTeam = getRandomPlayers(players, 5, userIds);
+
+  // Calculate totals
+  const userTotals = calculateTeamTotals(userTeam);
+  const opponentTotals = calculateTeamTotals(opponentTeam);
 
   return (
     <div>
-      <h1>Your Team</h1>
+      <h1>Matchup</h1>
 
-      <table border="1" cellPadding="6">
+      {/* Team Rosters */}
+      <div style={{ display: "flex", gap: "40px" }}>
+        <div>
+          <h2>Your Team</h2>
+          <ul>
+            {userTeam.map(player => (
+              <li key={player.id}>{player.name}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h2>Opponent Team</h2>
+          <ul>
+            {opponentTeam.map(player => (
+              <li key={player.id}>{player.name}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Team Totals */}
+      <table border="1" cellPadding="6" style={{ marginTop: "30px" }}>
         <thead>
           <tr>
-            <th>Player</th>
-            <th>FG%</th>
-            <th>3P</th>
-            <th>FT%</th>
-            <th>TRB</th>
-            <th>AST</th>
-            <th>STL</th>
-            <th>BLK</th>
-            <th>TOV</th>
-            <th>PTS</th>
+            <th>Category</th>
+            <th>Your Team</th>
+            <th>Opponent</th>
           </tr>
         </thead>
-
         <tbody>
-          {userTeam.map(player => (
-            <tr key={player.id}>
-              <td>{player.name}</td>
-              <td>{player.stats.fgPercent}</td>
-              <td>{player.stats.threePt}</td>
-              <td>{player.stats.ftPercent}</td>
-              <td>{player.stats.rebounds}</td>
-              <td>{player.stats.assists}</td>
-              <td>{player.stats.steals}</td>
-              <td>{player.stats.blocks}</td>
-              <td>{player.stats.turnovers}</td>
-              <td>{player.stats.points}</td>
-            </tr>
-          ))}
-        </tbody>
-
-        <tfoot>
           <tr>
-            <th>Team Total</th>
-            <th>{teamFgPercent}</th>
-            <th>{totals.threePt}</th>
-            <th>{teamFtPercent}</th>
-            <th>{totals.rebounds}</th>
-            <th>{totals.assists}</th>
-            <th>{totals.steals}</th>
-            <th>{totals.blocks}</th>
-            <th>{totals.turnovers}</th>
-            <th>{totals.points}</th>
+            <td>FG%</td>
+            <td>{userTotals.fgPercent}</td>
+            <td>{opponentTotals.fgPercent}</td>
           </tr>
-        </tfoot>
+          <tr>
+            <td>3P</td>
+            <td>{userTotals.threePt}</td>
+            <td>{opponentTotals.threePt}</td>
+          </tr>
+          <tr>
+            <td>FT%</td>
+            <td>{userTotals.ftPercent}</td>
+            <td>{opponentTotals.ftPercent}</td>
+          </tr>
+          <tr>
+            <td>TRB</td>
+            <td>{userTotals.rebounds}</td>
+            <td>{opponentTotals.rebounds}</td>
+          </tr>
+          <tr>
+            <td>AST</td>
+            <td>{userTotals.assists}</td>
+            <td>{opponentTotals.assists}</td>
+          </tr>
+          <tr>
+            <td>STL</td>
+            <td>{userTotals.steals}</td>
+            <td>{opponentTotals.steals}</td>
+          </tr>
+          <tr>
+            <td>BLK</td>
+            <td>{userTotals.blocks}</td>
+            <td>{opponentTotals.blocks}</td>
+          </tr>
+          <tr>
+            <td>TOV</td>
+            <td>{userTotals.turnovers}</td>
+            <td>{opponentTotals.turnovers}</td>
+          </tr>
+          <tr>
+            <td>PTS</td>
+            <td>{userTotals.points}</td>
+            <td>{opponentTotals.points}</td>
+          </tr>
+        </tbody>
       </table>
-
-      <h2 style={{ marginTop: "30px" }}>Opponent Teams (coming next)</h2>
     </div>
   );
 }
