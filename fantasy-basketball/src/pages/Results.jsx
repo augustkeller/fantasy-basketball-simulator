@@ -1,67 +1,20 @@
 import { useLocation, Navigate } from "react-router-dom";
 import { players } from "../data/players";
-
-/* ---------------- Utility Helpers ---------------- */
-
-function getRandomPlayers(pool, count, excludeIds = []) {
-  const filtered = pool.filter(p => !excludeIds.includes(p.id));
-  const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
-
-function calculateTeamTotals(team) {
-  const totals = team.reduce(
-    (acc, player) => {
-      acc.fg += player.stats.fg;
-      acc.fga += player.stats.fga;
-      acc.threePt += player.stats.threePt;
-      acc.ft += player.stats.ft;
-      acc.fta += player.stats.fta;
-      acc.rebounds += player.stats.rebounds;
-      acc.assists += player.stats.assists;
-      acc.steals += player.stats.steals;
-      acc.blocks += player.stats.blocks;
-      acc.turnovers += player.stats.turnovers;
-      acc.points += player.stats.points;
-      return acc;
-    },
-    {
-      fg: 0,
-      fga: 0,
-      threePt: 0,
-      ft: 0,
-      fta: 0,
-      rebounds: 0,
-      assists: 0,
-      steals: 0,
-      blocks: 0,
-      turnovers: 0,
-      points: 0
-    }
-  );
-
-  return {
-    ...totals,
-    fgPercent: totals.fga ? (totals.fg / totals.fga).toFixed(3) : "0.000",
-    ftPercent: totals.fta ? (totals.ft / totals.fta).toFixed(3) : "0.000"
-  };
-}
-
-/* ---------------- Results Page ---------------- */
+import { getRandomPlayers } from "../utils/randomPlayers";
+import { calculateTeamTotals } from "../utils/teamStats";
 
 export default function Results() {
   const { state } = useLocation();
 
+  // Redirect if user refreshes or lands here directly
   if (!state?.team) {
     return <Navigate to="/" replace />;
   }
 
   const userTeam = state.team;
+  const userIds = userTeam.map(player => player.id);
 
-  // Prevent overlap between teams
-  const userIds = userTeam.map(p => p.id);
-
-  // Generate opponent team
+  // Generate opponent team (no overlap)
   const opponentTeam = getRandomPlayers(players, 5, userIds);
 
   // Calculate totals
@@ -72,7 +25,7 @@ export default function Results() {
     <div>
       <h1>Matchup</h1>
 
-      {/* Team Rosters */}
+      {/* Rosters */}
       <div style={{ display: "flex", gap: "40px" }}>
         <div>
           <h2>Your Team</h2>
@@ -93,7 +46,7 @@ export default function Results() {
         </div>
       </div>
 
-      {/* Team Totals */}
+      {/* 9-Cat Team Totals */}
       <table border="1" cellPadding="6" style={{ marginTop: "30px" }}>
         <thead>
           <tr>
