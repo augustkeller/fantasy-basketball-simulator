@@ -1,4 +1,5 @@
 import { useLocation, Navigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
@@ -15,16 +16,31 @@ export default function Results() {
   const userTeam = state.team;
   const userIds = userTeam.map(player => player.id);
 
-  // Generate opponent team (no overlap)
-  const opponentTeam = getRandomPlayers(players, 5, userIds);
+  // Opponent lives in state now
+  const [opponentTeam, setOpponentTeam] = useState(() =>
+    getRandomPlayers(players, 5, userIds)
+  );
 
-  // Calculate totals
-  const userTotals = calculateTeamTotals(userTeam);
-  const opponentTotals = calculateTeamTotals(opponentTeam);
+  // Button handler to generate a new opponent
+  function nextOpponent() {
+    setOpponentTeam(getRandomPlayers(players, 5, userIds));
+  }
+
+  // Calculate totals (memoized for efficiency)
+  const userTotals = useMemo(() => calculateTeamTotals(userTeam), [userTeam]);
+  const opponentTotals = useMemo(
+    () => calculateTeamTotals(opponentTeam),
+    [opponentTeam]
+  );
 
   return (
     <div>
       <h1>Matchup</h1>
+
+      {/* Next Opponent Button */}
+      <button onClick={nextOpponent} style={{ marginBottom: "20px" }}>
+        Next Opponent
+      </button>
 
       {/* Rosters */}
       <div style={{ display: "flex", gap: "40px" }}>
@@ -108,8 +124,7 @@ export default function Results() {
       <TeamComparison
         userTotals={userTotals}
         opponentTotals={opponentTotals}
-        />
-
+      />
     </div>
   );
 }
