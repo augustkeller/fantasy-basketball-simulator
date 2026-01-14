@@ -6912,6 +6912,10 @@ export const players = rawPlayers.map((player, index) => ({
     rebounds: player.TRB,
     assists: player.AST,
     steals: player.STL,
-    blocks: player.BLK
+    blocks: player.BLK,
+    fgPercent: player["FG%"],
+    ftPercent: player["FT%"],
+    threePt: player["3P"],
+    turnovers: player.TOV
   }
 }));
