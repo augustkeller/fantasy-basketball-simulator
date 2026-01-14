@@ -2,6 +2,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
+import TeamComparison from "../components/TeamComparison";
 
 export default function Results() {
   const { state } = useLocation();
@@ -103,6 +104,12 @@ export default function Results() {
           </tr>
         </tbody>
       </table>
+
+      <TeamComparison
+        userTotals={userTotals}
+        opponentTotals={opponentTotals}
+        />
+
     </div>
   );
 }
