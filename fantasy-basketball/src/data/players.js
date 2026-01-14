@@ -6908,14 +6908,18 @@ export const players = rawPlayers.map((player, index) => ({
   season: player.Season,
   team: player.Tm,
   stats: {
-    points: player.PTS,
+    fg: player.FG,
+    fga: player.FGA,
+    fgPercent: player["FG%"],
+    threePt: player["3P"],
+    ft: player.FT,
+    fta: player.FTA,
+    ftPercent: player["FT%"],
     rebounds: player.TRB,
     assists: player.AST,
     steals: player.STL,
     blocks: player.BLK,
-    fgPercent: player["FG%"],
-    ftPercent: player["FT%"],
-    threePt: player["3P"],
-    turnovers: player.TOV
+    turnovers: player.TOV,
+    points: player.PTS
   }
 }));

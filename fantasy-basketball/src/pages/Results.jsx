@@ -3,19 +3,20 @@ import { useLocation, Navigate } from "react-router-dom";
 export default function Results() {
   const { state } = useLocation();
 
-  // Redirect if someone visits /results directly
   if (!state?.team) {
     return <Navigate to="/" replace />;
   }
 
   const userTeam = state.team;
 
-  // Sum up team stats
+  // Aggregate totals
   const totals = userTeam.reduce(
     (acc, player) => {
-      acc.fgPercent += player.stats.fgPercent;
+      acc.fg += player.stats.fg;
+      acc.fga += player.stats.fga;
       acc.threePt += player.stats.threePt;
-      acc.ftPercent += player.stats.ftPercent;
+      acc.ft += player.stats.ft;
+      acc.fta += player.stats.fta;
       acc.rebounds += player.stats.rebounds;
       acc.assists += player.stats.assists;
       acc.steals += player.stats.steals;
@@ -25,9 +26,11 @@ export default function Results() {
       return acc;
     },
     {
-      fgPercent: 0,
+      fg: 0,
+      fga: 0,
       threePt: 0,
-      ftPercent: 0,
+      ft: 0,
+      fta: 0,
       rebounds: 0,
       assists: 0,
       steals: 0,
@@ -37,15 +40,18 @@ export default function Results() {
     }
   );
 
-  // Averages for FG% and FT%
-  const avgFgPercent = (totals.fgPercent / userTeam.length).toFixed(3);
-  const avgFtPercent = (totals.ftPercent / userTeam.length).toFixed(3);
+  // Weighted percentages
+  const teamFgPercent =
+    totals.fga > 0 ? (totals.fg / totals.fga).toFixed(3) : "0.000";
+
+  const teamFtPercent =
+    totals.fta > 0 ? (totals.ft / totals.fta).toFixed(3) : "0.000";
 
   return (
     <div>
       <h1>Your Team</h1>
 
-      <table border="1" cellPadding="5">
+      <table border="1" cellPadding="6">
         <thead>
           <tr>
             <th>Player</th>
@@ -60,6 +66,7 @@ export default function Results() {
             <th>PTS</th>
           </tr>
         </thead>
+
         <tbody>
           {userTeam.map(player => (
             <tr key={player.id}>
@@ -76,12 +83,13 @@ export default function Results() {
             </tr>
           ))}
         </tbody>
+
         <tfoot>
           <tr>
             <th>Team Total</th>
-            <th>{avgFgPercent}</th>
+            <th>{teamFgPercent}</th>
             <th>{totals.threePt}</th>
-            <th>{avgFtPercent}</th>
+            <th>{teamFtPercent}</th>
             <th>{totals.rebounds}</th>
             <th>{totals.assists}</th>
             <th>{totals.steals}</th>
