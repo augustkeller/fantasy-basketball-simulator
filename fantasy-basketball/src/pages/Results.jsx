@@ -14,57 +14,87 @@ export default function Results() {
   }
 
   const userTeam = state.team;
-  const userIds = userTeam.map(player => player.id);
+  const userIds = userTeam.map(p => p.id);
 
-  // Opponent lives in state now
   const [opponentTeam, setOpponentTeam] = useState(() =>
     getRandomPlayers(players, 5, userIds)
   );
 
-  // Button handler to generate a new opponent
   function nextOpponent() {
     setOpponentTeam(getRandomPlayers(players, 5, userIds));
   }
 
-  // Calculate totals (memoized for efficiency)
-  const userTotals = useMemo(() => calculateTeamTotals(userTeam), [userTeam]);
+  const userTotals = useMemo(
+    () => calculateTeamTotals(userTeam),
+    [userTeam]
+  );
+
   const opponentTotals = useMemo(
     () => calculateTeamTotals(opponentTeam),
     [opponentTeam]
   );
 
+  function renderTeamTable(team) {
+    return (
+      <table border="1" cellPadding="5" style={{ width: "100%" }}>
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>FG%</th>
+            <th>3P</th>
+            <th>FT%</th>
+            <th>TRB</th>
+            <th>AST</th>
+            <th>STL</th>
+            <th>BLK</th>
+            <th>TOV</th>
+            <th>PTS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {team.map(player => (
+            <tr key={player.id}>
+              <td>{player.name}</td>
+              <td>{player.stats.fgPercent}</td>
+              <td>{player.stats.threePt}</td>
+              <td>{player.stats.ftPercent}</td>
+              <td>{player.stats.rebounds}</td>
+              <td>{player.stats.assists}</td>
+              <td>{player.stats.steals}</td>
+              <td>{player.stats.blocks}</td>
+              <td>{player.stats.turnovers}</td>
+              <td>{player.stats.points}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+
   return (
     <div>
       <h1>Matchup</h1>
 
-      {/* Next Opponent Button */}
       <button onClick={nextOpponent} style={{ marginBottom: "20px" }}>
         Next Opponent
       </button>
 
-      {/* Rosters */}
+      {/* Team Tables */}
       <div style={{ display: "flex", gap: "40px" }}>
-        <div>
+        <div style={{ flex: 1 }}>
           <h2>Your Team</h2>
-          <ul>
-            {userTeam.map(player => (
-              <li key={player.id}>{player.name}</li>
-            ))}
-          </ul>
+          {renderTeamTable(userTeam)}
         </div>
 
-        <div>
+        <div style={{ flex: 1 }}>
           <h2>Opponent Team</h2>
-          <ul>
-            {opponentTeam.map(player => (
-              <li key={player.id}>{player.name}</li>
-            ))}
-          </ul>
+          {renderTeamTable(opponentTeam)}
         </div>
       </div>
 
-      {/* 9-Cat Team Totals */}
-      <table border="1" cellPadding="6" style={{ marginTop: "30px" }}>
+      {/* Team Totals */}
+      <h2 style={{ marginTop: "30px" }}>Team Totals</h2>
+      <table border="1" cellPadding="6">
         <thead>
           <tr>
             <th>Category</th>
