@@ -1,4 +1,4 @@
-import { useLocation, Navigate } from "react-router-dom";
+import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
@@ -7,6 +7,7 @@ import TeamComparison from "../components/TeamComparison";
 
 export default function Results() {
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   // Redirect if user refreshes or lands here directly
   if (!state?.team) {
@@ -73,11 +74,13 @@ export default function Results() {
 
   return (
     <div>
-      <h1>Matchup</h1>
+      {/* Navigation buttons */}
+      <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+        <button onClick={() => navigate("/")}>Back</button>
+        <button onClick={nextOpponent}>Next Opponent</button>
+      </div>
 
-      <button onClick={nextOpponent} style={{ marginBottom: "20px" }}>
-        Next Opponent
-      </button>
+      <h1>Matchup</h1>
 
       {/* Team Tables */}
       <div style={{ display: "flex", gap: "40px" }}>
