@@ -4,6 +4,7 @@ import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
+import WinLossTracker from "../components/WinLossTracker";
 
 export default function Results() {
   const { state } = useLocation();
@@ -155,6 +156,11 @@ export default function Results() {
       </table>
 
       <TeamComparison
+        userTotals={userTotals}
+        opponentTotals={opponentTotals}
+      />
+
+      <WinLossTracker
         userTotals={userTotals}
         opponentTotals={opponentTotals}
       />
