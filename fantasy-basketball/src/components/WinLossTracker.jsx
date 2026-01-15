@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function WinLossTracker({ userTotals, opponentTotals }) {
   const [record, setRecord] = useState({
@@ -7,9 +7,18 @@ export default function WinLossTracker({ userTotals, opponentTotals }) {
     ties: 0
   });
 
-  function compareTeams() {
-    let userWins = 0;
-    let opponentWins = 0;
+  const hasLoggedFirstMatchup = useRef(false);
+
+  useEffect(() => {
+    // Skip logging the very first render
+    if (!hasLoggedFirstMatchup.current) {
+      hasLoggedFirstMatchup.current = true;
+      return;
+    }
+
+    let matchupWins = 0;
+    let matchupLosses = 0;
+    let matchupTies = 0;
 
     const categories = [
       { key: "fgPercent", higherIsBetter: true },
@@ -19,7 +28,7 @@ export default function WinLossTracker({ userTotals, opponentTotals }) {
       { key: "assists", higherIsBetter: true },
       { key: "steals", higherIsBetter: true },
       { key: "blocks", higherIsBetter: true },
-      { key: "turnovers", higherIsBetter: false }, // lower wins
+      { key: "turnovers", higherIsBetter: false },
       { key: "points", higherIsBetter: true }
     ];
 
@@ -27,37 +36,32 @@ export default function WinLossTracker({ userTotals, opponentTotals }) {
       const userVal = userTotals[key];
       const oppVal = opponentTotals[key];
 
-      if (userVal === oppVal) return;
+      if (userVal === oppVal) {
+        matchupTies++;
+        return;
+      }
 
-      const userBetter = higherIsBetter
+      const userWinsCategory = higherIsBetter
         ? userVal > oppVal
         : userVal < oppVal;
 
-      if (userBetter) userWins++;
-      else opponentWins++;
+      if (userWinsCategory) matchupWins++;
+      else matchupLosses++;
     });
 
-    if (userWins > opponentWins) {
-      setRecord(r => ({ ...r, wins: r.wins + 1 }));
-    } else if (userWins < opponentWins) {
-      setRecord(r => ({ ...r, losses: r.losses + 1 }));
-    } else {
-      setRecord(r => ({ ...r, ties: r.ties + 1 }));
-    }
-  }
-
-  // Run every time a new opponent is generated
-  useEffect(() => {
-    compareTeams();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [opponentTotals]);
+    setRecord(prev => ({
+      wins: prev.wins + matchupWins,
+      losses: prev.losses + matchupLosses,
+      ties: prev.ties + matchupTies
+    }));
+  }, [opponentTotals, userTotals]);
 
   return (
     <div style={{ marginTop: "30px" }}>
       <h2>Overall Record</h2>
       <p>
-        {record.wins} - {record.losses}
-        {record.ties > 0 && ` - ${record.ties}`}
+        {record.wins} – {record.losses}
+        {record.ties > 0 && ` – ${record.ties}`}
       </p>
     </div>
   );
