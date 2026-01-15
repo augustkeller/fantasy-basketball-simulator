@@ -163,7 +163,9 @@ export default function Results() {
       <WinLossTracker
         userTotals={userTotals}
         opponentTotals={opponentTotals}
+        opponentTeam={opponentTeam}
       />
+
     </div>
   );
 }

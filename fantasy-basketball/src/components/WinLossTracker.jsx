@@ -1,16 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function WinLossTracker({ userTotals, opponentTotals }) {
+export default function WinLossTracker({
+  userTotals,
+  opponentTotals,
+  opponentTeam
+}) {
   const [record, setRecord] = useState({
     wins: 0,
     losses: 0,
     ties: 0
   });
 
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
   const hasLoggedFirstMatchup = useRef(false);
+  const matchupId = useRef(1);
 
   useEffect(() => {
-    // Skip logging the very first render
+    // Skip initial render (Strict Mode safe)
     if (!hasLoggedFirstMatchup.current) {
       hasLoggedFirstMatchup.current = true;
       return;
@@ -49,12 +57,30 @@ export default function WinLossTracker({ userTotals, opponentTotals }) {
       else matchupLosses++;
     });
 
+    // Update overall record
     setRecord(prev => ({
       wins: prev.wins + matchupWins,
       losses: prev.losses + matchupLosses,
       ties: prev.ties + matchupTies
     }));
-  }, [opponentTotals, userTotals]);
+
+    // Log matchup history
+    setHistory(prev => [
+      ...prev,
+      {
+        id: matchupId.current++,
+        opponent: opponentTeam.map(p => ({
+          id: p.id,
+          name: p.name
+        })),
+        result: {
+          wins: matchupWins,
+          losses: matchupLosses,
+          ties: matchupTies
+        }
+      }
+    ]);
+  }, [opponentTotals, userTotals, opponentTeam]);
 
   return (
     <div style={{ marginTop: "30px" }}>
@@ -63,6 +89,41 @@ export default function WinLossTracker({ userTotals, opponentTotals }) {
         {record.wins} – {record.losses}
         {record.ties > 0 && ` – ${record.ties}`}
       </p>
+
+      <button
+        onClick={() => setShowHistory(prev => !prev)}
+        style={{ marginTop: "10px" }}
+      >
+        {showHistory ? "Hide Matchup History" : "View Matchup History"}
+      </button>
+
+      {showHistory && (
+        <div style={{ marginTop: "20px" }}>
+          {history.map(matchup => (
+            <div
+              key={matchup.id}
+              style={{
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px"
+              }}
+            >
+              <strong>
+                Matchup {matchup.id}:{" "}
+                {matchup.result.wins}–{matchup.result.losses}
+                {matchup.result.ties > 0 &&
+                  `–${matchup.result.ties}`}
+              </strong>
+
+              <ul>
+                {matchup.opponent.map(player => (
+                  <li key={player.id}>{player.name}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
