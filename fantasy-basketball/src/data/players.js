@@ -6907,19 +6907,25 @@ export const players = rawPlayers.map((player, index) => ({
   position: player.Pos,
   season: player.Season,
   team: player.Tm,
+
   stats: {
-    fg: player.FG,
-    fga: player.FGA,
-    fgPercent: player["FG%"],
-    threePt: player["3P"],
-    ft: player.FT,
-    fta: player.FTA,
-    ftPercent: player["FT%"],
-    rebounds: player.TRB,
-    assists: player.AST,
-    steals: player.STL,
-    blocks: player.BLK,
-    turnovers: player.TOV,
-    points: player.PTS
+    // Shooting (raw totals needed for weighted %s)
+    fgMade: Number(player.FG) || 0,
+    fgAttempts: Number(player.FGA) || 0,
+    ftMade: Number(player.FT) || 0,
+    ftAttempts: Number(player.FTA) || 0,
+
+    // Percentages (safe fallback)
+    fgPercent: Number(player["FG%"]) || 0,
+    ftPercent: Number(player["FT%"]) || 0,
+
+    // Counting stats
+    threePt: Number(player["3P"]) || 0,
+    rebounds: Number(player.TRB) || 0,
+    assists: Number(player.AST) || 0,
+    steals: Number(player.STL) || 0,
+    blocks: Number(player.BLK) || 0,
+    turnovers: Number(player.TOV) || 0,
+    points: Number(player.PTS) || 0
   }
 }));
