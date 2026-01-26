@@ -74,6 +74,12 @@ button:disabled {
   transform: none;
 }
 
+.button-row {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px; /* 👈 this is the magic */
+}
+
 /* ===== Tables ===== */
 table {
   width: 100%;

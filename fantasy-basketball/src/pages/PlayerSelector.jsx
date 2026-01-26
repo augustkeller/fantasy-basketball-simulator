@@ -28,6 +28,10 @@ export default function PlayerSelector() {
     navigate("/results", { state: { team: selected } });
   }
 
+  function handleBack() {
+    navigate("/");
+  }
+
   return (
     <div>
       <h1>Select 5 Players</h1>
@@ -79,13 +83,19 @@ export default function PlayerSelector() {
         </tbody>
       </table>
 
-      <button
-        disabled={selected.length !== 5}
-        onClick={handleSubmit}
-        style={{ marginTop: "20px" }}
-      >
-        Submit Team
-      </button>
+      <div className="button-row">
+        <button
+          disabled={selected.length !== 5}
+          onClick={handleSubmit}
+        >
+          Submit Team
+        </button>
+
+        <button onClick={handleBack}>
+          ← Back to Game Modes
+        </button>
+      </div>
+
     </div>
   );
 }
