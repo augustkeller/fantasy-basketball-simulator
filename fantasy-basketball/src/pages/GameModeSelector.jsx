@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function GameModeSelect() {
+export default function GameModeSelector() {
   const navigate = useNavigate();
 
   return (
