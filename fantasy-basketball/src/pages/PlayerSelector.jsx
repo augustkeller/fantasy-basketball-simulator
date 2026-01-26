@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 
-export default function Home() {
+export default function PlayerSelector() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [randomPlayers, setRandomPlayers] = useState([]);
