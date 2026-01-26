@@ -6909,13 +6909,13 @@ export const players = rawPlayers.map((player, index) => ({
   team: player.Tm,
 
   stats: {
-    // Shooting (raw totals needed for weighted %s)
+    // RAW shooting totals (used for weighted %s)
     fgMade: Number(player.FG) || 0,
     fgAttempts: Number(player.FGA) || 0,
     ftMade: Number(player.FT) || 0,
     ftAttempts: Number(player.FTA) || 0,
 
-    // Percentages (safe fallback)
+    // Percentages (display only — not used for math)
     fgPercent: Number(player["FG%"]) || 0,
     ftPercent: Number(player["FT%"]) || 0,
 
@@ -6926,6 +6926,7 @@ export const players = rawPlayers.map((player, index) => ({
     steals: Number(player.STL) || 0,
     blocks: Number(player.BLK) || 0,
     turnovers: Number(player.TOV) || 0,
-    points: Number(player.PTS) || 0
+    points: Number(player.PTS) || 0,
   }
 }));
+

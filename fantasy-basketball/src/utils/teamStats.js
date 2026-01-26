@@ -1,11 +1,11 @@
 export function calculateTeamTotals(team) {
   const totals = team.reduce(
     (acc, player) => {
-      acc.fg += player.stats.fg;
-      acc.fga += player.stats.fga;
+      acc.fgMade += player.stats.fgMade;
+      acc.fgAttempts += player.stats.fgAttempts;
       acc.threePt += player.stats.threePt;
-      acc.ft += player.stats.ft;
-      acc.fta += player.stats.fta;
+      acc.ftMade += player.stats.ftMade;
+      acc.ftAttempts += player.stats.ftAttempts;
       acc.rebounds += player.stats.rebounds;
       acc.assists += player.stats.assists;
       acc.steals += player.stats.steals;
@@ -15,11 +15,11 @@ export function calculateTeamTotals(team) {
       return acc;
     },
     {
-      fg: 0,
-      fga: 0,
+      fgMade: 0,
+      fgAttempts: 0,
       threePt: 0,
-      ft: 0,
-      fta: 0,
+      ftMade: 0,
+      ftAttempts: 0,
       rebounds: 0,
       assists: 0,
       steals: 0,
@@ -31,7 +31,13 @@ export function calculateTeamTotals(team) {
 
   return {
     ...totals,
-    fgPercent: totals.fga ? (totals.fg / totals.fga).toFixed(3) : "0.000",
-    ftPercent: totals.fta ? (totals.ft / totals.fta).toFixed(3) : "0.000"
+    fgPercent:
+      totals.fgAttempts > 0
+        ? (totals.fgMade / totals.fgAttempts).toFixed(3)
+        : "0.000",
+    ftPercent:
+      totals.ftAttempts > 0
+        ? (totals.ftMade / totals.ftAttempts).toFixed(3)
+        : "0.000"
   };
 }
