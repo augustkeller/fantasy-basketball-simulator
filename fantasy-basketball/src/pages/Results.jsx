@@ -77,7 +77,7 @@ export default function Results() {
     <div>
       {/* Navigation buttons */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/")}>Back</button>
+        <button onClick={() => navigate("/one-player")}>Back</button>
         <button onClick={nextOpponent}>Next Opponent</button>
       </div>
 
