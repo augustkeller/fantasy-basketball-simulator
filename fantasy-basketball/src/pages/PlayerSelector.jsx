@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 
-export default function PlayerSelector() {
+export default function PlayerSelector({
+  gameMode,
+  currentPlayer,
+  setCurrentPlayer,
+  teams,
+  setTeams
+}) {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [randomPlayers, setRandomPlayers] = useState([]);
@@ -25,7 +31,33 @@ export default function PlayerSelector() {
   }
 
   function handleSubmit() {
-    navigate("/results", { state: { team: selected } });
+    // Single-player mode
+    if (gameMode === "single") {
+      setTeams({
+        player1: selected,
+        player2: []
+      });
+      navigate("/results");
+      return;
+    }
+
+    // Two-player mode
+    if (gameMode === "two-player") {
+      if (currentPlayer === 1) {
+        setTeams(prev => ({
+          ...prev,
+          player1: selected
+        }));
+        setSelected([]);
+        setCurrentPlayer(2);
+      } else {
+        setTeams(prev => ({
+          ...prev,
+          player2: selected
+        }));
+        navigate("/results");
+      }
+    }
   }
 
   function handleBack() {
@@ -34,7 +66,11 @@ export default function PlayerSelector() {
 
   return (
     <div>
-      <h1>Select 5 Players</h1>
+      <h1>
+        {gameMode === "two-player"
+          ? `Player ${currentPlayer}: Select 5 Players`
+          : "Select 5 Players"}
+      </h1>
 
       <table border="1" cellPadding="5">
         <thead>
@@ -88,14 +124,15 @@ export default function PlayerSelector() {
           disabled={selected.length !== 5}
           onClick={handleSubmit}
         >
-          Submit Team
+          {gameMode === "two-player" && currentPlayer === 1
+            ? "Confirm Player 1 Team"
+            : "Submit Team"}
         </button>
 
         <button onClick={handleBack}>
           ← Back to Game Modes
         </button>
       </div>
-
     </div>
   );
 }
