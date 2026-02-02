@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import GameModeSelect from "./pages/GameModeSelect";
+import GameModeSelector from "./pages/GameModeSelector";
 import PlayerSelector from "./pages/PlayerSelector";
 import Results from "./pages/Results";
 
@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<GameModeSelect setGameMode={setGameMode} />}
+          element={<GameModeSelector setGameMode={setGameMode} />}
         />
 
         <Route
