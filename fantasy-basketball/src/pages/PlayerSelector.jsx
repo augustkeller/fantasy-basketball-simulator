@@ -31,15 +31,21 @@ export default function PlayerSelector({
   }
 
   function handleSubmit() {
-    // Single-player mode
-    if (gameMode === "single") {
-      setTeams({
-        player1: selected,
-        player2: []
-      });
+    if (currentPlayer === 1) {
+      setTeams(prev => ({ ...prev, player1: selected }));
+
+      if (gameMode === "two-player") {
+        setCurrentPlayer(2);
+        setSelected([]);
+      } else {
+        navigate("/results");
+      }
+    } else {
+      setTeams(prev => ({ ...prev, player2: selected }));
       navigate("/results");
-      return;
     }
+}
+
 
     // Two-player mode
     if (gameMode === "two-player") {
