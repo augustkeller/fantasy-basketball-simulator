@@ -30,40 +30,22 @@ export default function PlayerSelector({
     );
   }
 
-  function handleSubmit() {
+function handleSubmit() {
+  if (gameMode === "two-player") {
     if (currentPlayer === 1) {
       setTeams(prev => ({ ...prev, player1: selected }));
-
-      if (gameMode === "two-player") {
-        setCurrentPlayer(2);
-        setSelected([]);
-      } else {
-        navigate("/results");
-      }
+      setSelected([]);
+      setCurrentPlayer(2);
     } else {
       setTeams(prev => ({ ...prev, player2: selected }));
       navigate("/results");
     }
-
-
-    // Two-player mode
-    if (gameMode === "two-player") {
-      if (currentPlayer === 1) {
-        setTeams(prev => ({
-          ...prev,
-          player1: selected
-        }));
-        setSelected([]);
-        setCurrentPlayer(2);
-      } else {
-        setTeams(prev => ({
-          ...prev,
-          player2: selected
-        }));
-        navigate("/results");
-      }
-    }
+  } else {
+    // single-player
+    setTeams(prev => ({ ...prev, player1: selected }));
+    navigate("/results");
   }
+}
 
   function handleBack() {
     navigate("/");
