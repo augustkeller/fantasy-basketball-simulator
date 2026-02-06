@@ -8,21 +8,28 @@ import WinLossTracker from "../components/WinLossTracker";
 
 export default function Results({ teams, gameMode }) {
   const navigate = useNavigate();
-  const userTeam = teams.player1;
 
-  if (!userTeam || userTeam.length !== 5) {
-    return <p>No team found. Please select a team first.</p>;
-  }
+  /* -----------------------------
+     Resolve teams by game mode
+  ------------------------------ */
 
-  const userIds = userTeam.map(p => p.id);
+  const userTeam =
+    gameMode === "two-player" ? teams.player1 : teams.player1;
 
-  const [opponentTeam, setOpponentTeam] = useState(() =>
-    getRandomPlayers(players, 5, userIds)
-  );
+  const opponentTeamInitial =
+    gameMode === "two-player"
+      ? teams.player2
+      : getRandomPlayers(
+          players,
+          5,
+          teams.player1.map(p => p.id)
+        );
 
-  function nextOpponent() {
-    setOpponentTeam(getRandomPlayers(players, 5, userIds));
-  }
+  const [opponentTeam, setOpponentTeam] = useState(opponentTeamInitial);
+
+  /* -----------------------------
+     Stat calculations
+  ------------------------------ */
 
   const userTotals = useMemo(
     () => calculateTeamTotals(userTeam),
@@ -33,6 +40,15 @@ export default function Results({ teams, gameMode }) {
     () => calculateTeamTotals(opponentTeam),
     [opponentTeam]
   );
+
+  /* -----------------------------
+     Handlers
+  ------------------------------ */
+
+  function nextOpponent() {
+    const userIds = userTeam.map(p => p.id);
+    setOpponentTeam(getRandomPlayers(players, 5, userIds));
+  }
 
   function renderTeamTable(team) {
     return (
@@ -71,39 +87,91 @@ export default function Results({ teams, gameMode }) {
     );
   }
 
+  /* -----------------------------
+     Render
+  ------------------------------ */
+
   return (
     <div>
+      {/* Navigation */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/select")}>Back</button>
+        <button onClick={() => navigate("/")}>Back to Game Modes</button>
+
         {gameMode === "single" && (
           <button onClick={nextOpponent}>Next Opponent</button>
         )}
       </div>
 
-      <h1>Matchup</h1>
+      <h1>
+        {gameMode === "two-player" ? "Head-to-Head Matchup" : "Matchup"}
+      </h1>
 
+      {/* Team Tables */}
       <div style={{ display: "flex", gap: "40px" }}>
         <div style={{ flex: 1 }}>
-          <h2>Your Team</h2>
+          <h2>
+            {gameMode === "two-player" ? "Player 1 Team" : "Your Team"}
+          </h2>
           {renderTeamTable(userTeam)}
         </div>
 
         <div style={{ flex: 1 }}>
-          <h2>Opponent Team</h2>
+          <h2>
+            {gameMode === "two-player" ? "Player 2 Team" : "Opponent Team"}
+          </h2>
           {renderTeamTable(opponentTeam)}
         </div>
       </div>
 
+      {/* Totals */}
+      <h2 style={{ marginTop: "30px" }}>Team Totals</h2>
+      <table border="1" cellPadding="6">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>
+              {gameMode === "two-player" ? "Player 1" : "You"}
+            </th>
+            <th>
+              {gameMode === "two-player" ? "Player 2" : "Opponent"}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            ["FG%", userTotals.fgPercent, opponentTotals.fgPercent],
+            ["3P", userTotals.threePt, opponentTotals.threePt],
+            ["FT%", userTotals.ftPercent, opponentTotals.ftPercent],
+            ["TRB", userTotals.rebounds, opponentTotals.rebounds],
+            ["AST", userTotals.assists, opponentTotals.assists],
+            ["STL", userTotals.steals, opponentTotals.steals],
+            ["BLK", userTotals.blocks, opponentTotals.blocks],
+            ["TOV", userTotals.turnovers, opponentTotals.turnovers],
+            ["PTS", userTotals.points, opponentTotals.points]
+          ].map(([label, user, opp]) => (
+            <tr key={label}>
+              <td>{label}</td>
+              <td>{user}</td>
+              <td>{opp}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Comparison */}
       <TeamComparison
         userTotals={userTotals}
         opponentTotals={opponentTotals}
       />
 
-      <WinLossTracker
-        userTotals={userTotals}
-        opponentTotals={opponentTotals}
-        opponentTeam={opponentTeam}
-      />
+      {/* Only track history in single-player */}
+      {gameMode === "single" && (
+        <WinLossTracker
+          userTotals={userTotals}
+          opponentTotals={opponentTotals}
+          opponentTeam={opponentTeam}
+        />
+      )}
     </div>
   );
 }
