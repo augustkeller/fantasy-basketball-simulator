@@ -17,17 +17,13 @@ export default function GameModeSelector({ setGameMode }) {
     <div>
       <h1>Fantasy Basketball Simulator</h1>
 
-      <div style={{ marginTop: "40px" }}>
+      <div style={{ marginTop: "40px", display: "flex", gap: "16px", justifyContent: "center" }}>
         <button onClick={startSinglePlayer}>
           1 Player Mode
         </button>
 
-        <button
-          onClick={startTwoPlayer}
-          style={{ marginLeft: "16px" }}
-          disabled
-        >
-          Multiplayer (Coming Soon)
+        <button onClick={startTwoPlayer}>
+          2 Player Mode
         </button>
       </div>
     </div>
