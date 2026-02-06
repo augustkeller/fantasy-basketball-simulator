@@ -18,7 +18,8 @@ export default function PlayerSelector({
   useEffect(() => {
     const randomSelection = getRandomPlayers(players, 20);
     setRandomPlayers(randomSelection);
-  }, []);
+    setSelected([]);
+  }, [currentPlayer]);
 
   function togglePlayer(player) {
     setSelected(prev =>
