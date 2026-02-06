@@ -44,7 +44,6 @@ export default function PlayerSelector({
       setTeams(prev => ({ ...prev, player2: selected }));
       navigate("/results");
     }
-}
 
 
     // Two-player mode
