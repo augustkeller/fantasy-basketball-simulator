@@ -13,6 +13,9 @@ export default function PlayerSelector({
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [randomPlayers, setRandomPlayers] = useState([]);
+  const [startYear, setStartYear] = useState("");
+  const [endYear, setEndYear] = useState("");
+
 
   // Generate 20 random players on first load
   useEffect(() => {
