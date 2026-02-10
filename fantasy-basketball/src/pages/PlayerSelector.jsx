@@ -26,6 +26,7 @@ export default function PlayerSelector({
 
     const randomSelection = getRandomPlayers(players, 20, [], yearRange);
     setRandomPlayers(randomSelection);
+    setSelected([]);
   }, [startYear, endYear, currentPlayer]);
 
   function togglePlayer(player) {
