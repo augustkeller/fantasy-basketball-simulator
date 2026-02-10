@@ -20,7 +20,7 @@ export default function PlayerSelector({
   // Generate 20 random players on first load
   useEffect(() => {
     const yearRange =
-      startYear && endYear
+      startYear && endYear && Number(startYear) <= Number(endYear)
         ? { start: Number(startYear), end: Number(endYear) }
         : null;
 
