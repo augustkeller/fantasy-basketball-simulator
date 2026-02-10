@@ -68,6 +68,24 @@ function handleSubmit() {
           : "Select 5 Players"}
       </h1>
 
+      <div style={{ marginBottom: "20px" }}>
+        <strong>Season Range (optional)</strong>
+        <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+          <input
+            type="number"
+            placeholder="Start year (e.g. 2005)"
+            value={startYear}
+            onChange={e => setStartYear(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="End year (e.g. 2015)"
+            value={endYear}
+            onChange={e => setEndYear(e.target.value)}
+          />
+        </div>
+      </div>
+
       <table border="1" cellPadding="5">
         <thead>
           <tr>
