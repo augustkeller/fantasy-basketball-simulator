@@ -19,10 +19,15 @@ export default function PlayerSelector({
 
   // Generate 20 random players on first load
   useEffect(() => {
-    const randomSelection = getRandomPlayers(players, 20);
+    const yearRange =
+      startYear && endYear
+        ? { start: Number(startYear), end: Number(endYear) }
+        : null;
+
+    const randomSelection = getRandomPlayers(players, 20, [], yearRange);
     setRandomPlayers(randomSelection);
-    setSelected([]);
-  }, [currentPlayer]);
+  }, [startYear, endYear]);
+
 
   function togglePlayer(player) {
     setSelected(prev =>
