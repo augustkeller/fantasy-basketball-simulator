@@ -32,19 +32,14 @@
 body {
   margin: 0;
   min-height: 100vh;
-
-  background-color: #000;
-
+  background-color: var(--bg-main);
   background-image:
     radial-gradient(circle at top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 70%),
     url("./assets/nba-hangtime-background.png");
-
   background-repeat: repeat;
   background-size: auto;
-
   color: var(--text-main);
 }
-
 
 /* ===== App container ===== */
 #root {
@@ -67,8 +62,8 @@ h1, h2, h3 {
 button {
   position: relative;
   background-color: #111;
-  color: #ffde00;
-  border: 4px solid #00f2fe;
+  color: var(--neon-yellow);
+  border: 4px solid var(--neon-cyan);
   padding: 12px 20px;
   font-weight: 900;
   font-style: italic;
@@ -79,6 +74,7 @@ button {
   transition: transform 0.1s ease;
 }
 
+/* Flame layer */
 button::before {
   content: "";
   position: absolute;
@@ -90,6 +86,16 @@ button::before {
   opacity: 0;
 }
 
+/* Hover state */
+button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 0 10px var(--neon-red),
+    0 0 20px var(--neon-orange),
+    0 0 40px var(--neon-yellow);
+}
+
+/* Pixel flame */
 button:hover::before {
   height: 40px;
   opacity: 1;
@@ -97,33 +103,15 @@ button:hover::before {
   background:
     repeating-linear-gradient(
       90deg,
-      #ff0000 0px,
-      #ff0000 6px,
-      #ff7e00 6px,
-      #ff7e00 12px,
-      #ffde00 12px,
-      #ffde00 18px
+      var(--neon-red) 0px,
+      var(--neon-red) 6px,
+      var(--neon-orange) 6px,
+      var(--neon-orange) 12px,
+      var(--neon-yellow) 12px,
+      var(--neon-yellow) 18px
     );
 
-  animation: pixelFlame 0.4s infinite alternate;
-}
-
-button:hover {
-  box-shadow:
-    0 0 10px #ff0000,
-    0 0 20px #ff7e00,
-    0 0 40px #ffde00;
-
-  transform: translateY(-3px) scale(1.05);
-}
-
-button:hover {
-  background-color: #ff0000;
-  color: #fff;
-  transform: translateY(-2px) scale(1.03);
-
-  animation: fire 0.6s infinite alternate;
-  box-shadow: 0 0 20px #ff7e00;
+  animation: pixelFlame 0.15s infinite steps(2);
 }
 
 button:disabled {
@@ -162,6 +150,10 @@ td {
   text-align: center;
 }
 
+tbody tr:nth-child(even) {
+  background-color: var(--bg-main);
+}
+
 tbody tr:hover {
   background-color: rgba(0, 242, 254, 0.1);
 }
@@ -180,9 +172,8 @@ input[type="number"] {
 }
 
 /* =========================
-   ON FIRE ANIMATION
+   PIXEL FIRE ANIMATION
    ========================= */
-
 @keyframes pixelFlame {
   0% {
     transform: translateY(0) scaleY(1);
@@ -190,6 +181,6 @@ input[type="number"] {
   }
   100% {
     transform: translateY(-8px) scaleY(1.2);
-    filter: brightness(1.3);
+    filter: brightness(1.4);
   }
 }
