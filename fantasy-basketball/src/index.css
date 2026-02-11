@@ -135,3 +135,22 @@ input[type="number"] {
   color: white;
   padding: 6px;
 }
+
+/* =========================
+   ON FIRE ANIMATION
+   ========================= */
+
+@keyframes fire {
+  0% {
+    text-shadow: 0 0 6px #ff0000;
+  }
+  50% {
+    text-shadow:
+      0 0 10px #ff4500,
+      0 0 20px #ff7e00,
+      0 0 30px #ffde00;
+  }
+  100% {
+    text-shadow: 0 0 6px #ff0000;
+  }
+}
