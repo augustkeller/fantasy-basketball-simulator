@@ -65,15 +65,56 @@ h1, h2, h3 {
 
 /* ===== Buttons ===== */
 button {
-  background: var(--neon-red);
-  border: 3px solid var(--neon-yellow);
-  color: white;
-
+  position: relative;
+  background-color: #111;
+  color: #ffde00;
+  border: 4px solid #00f2fe;
   padding: 12px 20px;
-  font-weight: bold;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   cursor: pointer;
+  overflow: visible;
+  transition: transform 0.1s ease;
+}
 
-  transition: all 0.2s ease;
+button::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+button:hover::before {
+  height: 40px;
+  opacity: 1;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #ff0000 0px,
+      #ff0000 6px,
+      #ff7e00 6px,
+      #ff7e00 12px,
+      #ffde00 12px,
+      #ffde00 18px
+    );
+
+  animation: pixelFlame 0.4s infinite alternate;
+}
+
+button:hover {
+  box-shadow:
+    0 0 10px #ff0000,
+    0 0 20px #ff7e00,
+    0 0 40px #ffde00;
+
+  transform: translateY(-3px) scale(1.05);
 }
 
 button:hover {
@@ -142,17 +183,13 @@ input[type="number"] {
    ON FIRE ANIMATION
    ========================= */
 
-@keyframes fire {
+@keyframes pixelFlame {
   0% {
-    text-shadow: 0 0 6px #ff0000;
-  }
-  50% {
-    text-shadow:
-      0 0 10px #ff4500,
-      0 0 20px #ff7e00,
-      0 0 30px #ffde00;
+    transform: translateY(0) scaleY(1);
+    filter: brightness(1);
   }
   100% {
-    text-shadow: 0 0 6px #ff0000;
+    transform: translateY(-8px) scaleY(1.2);
+    filter: brightness(1.3);
   }
 }
