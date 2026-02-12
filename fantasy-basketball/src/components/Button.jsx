@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 
-export default function FireButton({ children, ...props }) {
+export default function Button({ children, ...props }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
