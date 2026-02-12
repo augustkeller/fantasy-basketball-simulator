@@ -74,46 +74,6 @@ button {
   transition: transform 0.1s ease;
 }
 
-/* Flame layer */
-button::before {
-  content: "";
-  position: absolute;
-  left: -6px;
-  right: -6px;
-  bottom: -6px;
-  height: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* Hover state */
-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 0 10px var(--neon-red),
-    0 0 20px var(--neon-orange),
-    0 0 40px var(--neon-yellow);
-}
-
-/* Pixel flame */
-button:hover::before {
-  height: 40px;
-  opacity: 1;
-
-  background:
-    repeating-linear-gradient(
-      90deg,
-      var(--neon-red) 0px,
-      var(--neon-red) 6px,
-      var(--neon-orange) 6px,
-      var(--neon-orange) 12px,
-      var(--neon-yellow) 12px,
-      var(--neon-yellow) 18px
-    );
-
-  animation: pixelFlame 0.15s infinite steps(2);
-}
-
 button:disabled {
   background: #333;
   border-color: #555;
@@ -169,18 +129,4 @@ input[type="number"] {
   border: 2px solid var(--neon-cyan);
   color: white;
   padding: 6px;
-}
-
-/* =========================
-   PIXEL FIRE ANIMATION
-   ========================= */
-@keyframes pixelFlame {
-  0% {
-    transform: translateY(0) scaleY(1);
-    filter: brightness(1);
-  }
-  100% {
-    transform: translateY(-8px) scaleY(1.2);
-    filter: brightness(1.4);
-  }
 }
