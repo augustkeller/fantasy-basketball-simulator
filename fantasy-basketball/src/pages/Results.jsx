@@ -5,6 +5,7 @@ import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
 import WinLossTracker from "../components/WinLossTracker";
+import Button from "../components/Button";
 
 export default function Results({ teams, gameMode }) {
   const navigate = useNavigate();
@@ -95,10 +96,10 @@ export default function Results({ teams, gameMode }) {
     <div>
       {/* Navigation */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/")}>Back to Game Modes</button>
+        <Button onClick={() => navigate("/")}>Back to Game Modes</Button>
 
         {gameMode === "single" && (
-          <button onClick={nextOpponent}>Next Opponent</button>
+          <Button onClick={nextOpponent}>Next Opponent</Button>
         )}
       </div>
 
