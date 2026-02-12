@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
+import Button from "../components/Button";
 
 export default function PlayerSelector({
   gameMode,
@@ -134,18 +135,18 @@ function handleSubmit() {
       </table>
 
       <div className="button-row">
-        <button
+        <Button
           disabled={selected.length !== 5}
           onClick={handleSubmit}
         >
           {gameMode === "two-player" && currentPlayer === 1
             ? "Confirm Player 1 Team"
             : "Submit Team"}
-        </button>
+        </Button>
 
-        <button onClick={handleBack}>
+        <Button onClick={handleBack}>
           ← Back to Game Modes
-        </button>
+        </Button>
       </div>
     </div>
   );
