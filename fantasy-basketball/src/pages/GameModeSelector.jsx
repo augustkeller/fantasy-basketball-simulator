@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function GameModeSelector({ setGameMode }) {
   const navigate = useNavigate();
@@ -18,13 +19,13 @@ export default function GameModeSelector({ setGameMode }) {
       <h1>Fantasy Basketball Simulator</h1>
 
       <div style={{ marginTop: "40px", display: "flex", gap: "16px", justifyContent: "center" }}>
-        <button onClick={startSinglePlayer}>
+        <Button onClick={startSinglePlayer}>
           1 Player Mode
-        </button>
+        </Button>
 
-        <button onClick={startTwoPlayer}>
+        <Button onClick={startTwoPlayer}>
           2 Player Mode
-        </button>
+        </Button>
       </div>
     </div>
   );
