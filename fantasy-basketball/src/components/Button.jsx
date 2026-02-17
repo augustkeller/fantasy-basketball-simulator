@@ -90,9 +90,9 @@ export default function Button({ children, ...props }) {
           style={{
             position: "absolute",
             bottom: "4px",
-            right: "4px",
-            width: "48px",
-            height: "48px",
+            right: "-30px",
+            width: "96px",
+            height: "96px",
             pointerEvents: "none",
             imageRendering: "pixelated",
             opacity: 0.7,
