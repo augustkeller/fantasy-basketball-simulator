@@ -133,3 +133,14 @@ input[type="number"] {
   color: white;
   padding: 6px;
 }
+
+/* ===== Season Range Input ===== */
+.season-range {
+  margin-bottom: 20px;
+}
+
+.season-range-inputs {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
