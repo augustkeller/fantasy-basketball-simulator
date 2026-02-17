@@ -95,7 +95,7 @@ export default function Button({ children, ...props }) {
             height: "48px",
             pointerEvents: "none",
             imageRendering: "pixelated",
-            opacity: 0.9
+            opacity: 0.7
           }}
         />
       )}
