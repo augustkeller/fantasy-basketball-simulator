@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import Button from "../components/Button";
+import SeasonRangeSelector from "../components/SeasonRangeSelector";
 
 export default function PlayerSelector({
   gameMode,
@@ -69,23 +70,12 @@ function handleSubmit() {
           : "Select 5 Players"}
       </h1>
 
-      <div style={{ marginBottom: "20px" }}>
-        <strong>Season Range (optional)</strong>
-        <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
-          <input
-            type="number"
-            placeholder="Start year (e.g. 2005)"
-            value={startYear}
-            onChange={e => setStartYear(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="End year (e.g. 2015)"
-            value={endYear}
-            onChange={e => setEndYear(e.target.value)}
-          />
-        </div>
-      </div>
+<SeasonRangeSelector
+  startYear={startYear}
+  endYear={endYear}
+  setStartYear={setStartYear}
+  setEndYear={setEndYear}
+/>
 
       <table border="1" cellPadding="5">
         <thead>
