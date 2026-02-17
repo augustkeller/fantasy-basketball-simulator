@@ -89,13 +89,13 @@ export default function Button({ children, ...props }) {
           ref={canvasRef}
           style={{
             position: "absolute",
-            bottom: "-20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "120px",
-            height: "120px",
+            bottom: "4px",
+            right: "4px",
+            width: "48px",
+            height: "48px",
             pointerEvents: "none",
-            imageRendering: "pixelated"
+            imageRendering: "pixelated",
+            opacity: 0.9
           }}
         />
       )}
