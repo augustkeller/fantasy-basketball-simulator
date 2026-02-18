@@ -144,3 +144,20 @@ input[type="number"] {
   gap: 12px;
   margin-top: 8px;
 }
+
+/* ===== User Count Selection Input ===== */
+.user-count-selector {
+  margin-bottom: 20px;
+}
+
+.user-count-dropdown {
+  margin-top: 8px;
+  padding: 8px;
+  font-weight: bold;
+  background: #111;
+  color: var(--neon-yellow);
+  border: 3px solid var(--neon-cyan);
+  font-family: "Impact", "Arial Black", sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+}
