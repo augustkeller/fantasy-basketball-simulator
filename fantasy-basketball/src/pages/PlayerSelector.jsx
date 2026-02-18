@@ -1,35 +1,49 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import Button from "../components/Button";
 import SeasonRangeSelector from "../components/SeasonRangeSelector";
 
-export default function PlayerSelector({
-  gameMode,
-  currentPlayer,
-  setCurrentPlayer,
-  teams,
-  setTeams
-}) {
+export default function PlayerSelector({ teams, setTeams }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get user count from GameModeSelector page
+  const userCount = location.state?.userCount || 1;
+
+  // Track which user is currently drafting
+  const [currentUser, setCurrentUser] = useState(1);
+
+  // Draft state
   const [selected, setSelected] = useState([]);
   const [randomPlayers, setRandomPlayers] = useState([]);
+
+  // Season filter state
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
 
-
-  // Generate 20 random players on first load
+  // Generate 20 random players when:
+  // - season range changes
+  // - current user changes
   useEffect(() => {
     const yearRange =
-      startYear && endYear && Number(startYear) <= Number(endYear)
+      startYear &&
+      endYear &&
+      Number(startYear) <= Number(endYear)
         ? { start: Number(startYear), end: Number(endYear) }
         : null;
 
-    const randomSelection = getRandomPlayers(players, 20, [], yearRange);
+    const randomSelection = getRandomPlayers(
+      players,
+      20,
+      [],
+      yearRange
+    );
+
     setRandomPlayers(randomSelection);
     setSelected([]);
-  }, [startYear, endYear, currentPlayer]);
+  }, [startYear, endYear, currentUser]);
 
   function togglePlayer(player) {
     setSelected(prev =>
@@ -41,22 +55,21 @@ export default function PlayerSelector({
     );
   }
 
-function handleSubmit() {
-  if (gameMode === "two-player") {
-    if (currentPlayer === 1) {
-      setTeams(prev => ({ ...prev, player1: selected }));
+  function handleSubmit() {
+    // Save team dynamically (player1, player2, etc.)
+    setTeams(prev => ({
+      ...prev,
+      [`player${currentUser}`]: selected
+    }));
+
+    // Move to next user or go to results
+    if (currentUser < userCount) {
       setSelected([]);
-      setCurrentPlayer(2);
+      setCurrentUser(prev => prev + 1);
     } else {
-      setTeams(prev => ({ ...prev, player2: selected }));
       navigate("/results");
     }
-  } else {
-    // single-player
-    setTeams(prev => ({ ...prev, player1: selected }));
-    navigate("/results");
   }
-}
 
   function handleBack() {
     navigate("/");
@@ -64,18 +77,14 @@ function handleSubmit() {
 
   return (
     <div>
-      <h1>
-        {gameMode === "two-player"
-          ? `Player ${currentPlayer}: Select 5 Players`
-          : "Select 5 Players"}
-      </h1>
+      <h1>{`Player ${currentUser}: Select 5 Players`}</h1>
 
-<SeasonRangeSelector
-  startYear={startYear}
-  endYear={endYear}
-  setStartYear={setStartYear}
-  setEndYear={setEndYear}
-/>
+      <SeasonRangeSelector
+        startYear={startYear}
+        endYear={endYear}
+        setStartYear={setStartYear}
+        setEndYear={setEndYear}
+      />
 
       <table border="1" cellPadding="5">
         <thead>
@@ -129,9 +138,9 @@ function handleSubmit() {
           disabled={selected.length !== 5}
           onClick={handleSubmit}
         >
-          {gameMode === "two-player" && currentPlayer === 1
-            ? "Confirm Player 1 Team"
-            : "Submit Team"}
+          {currentUser < userCount
+            ? `Confirm Player ${currentUser} Team`
+            : "Submit Final Team"}
         </Button>
 
         <Button onClick={handleBack}>
