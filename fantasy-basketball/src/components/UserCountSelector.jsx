@@ -12,7 +12,7 @@ export default function UserCountSelector({
   }
 
   return (
-    <div className="player-count-selector">
+    <div className="user-count-selector">
       <label>
         <strong>{label}</strong>
       </label>
@@ -20,7 +20,7 @@ export default function UserCountSelector({
       <select
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="player-count-dropdown"
+        className="user-count-dropdown"
       >
         {options.map((num) => (
           <option key={num} value={num}>
