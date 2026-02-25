@@ -1,35 +1,37 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
-import WinLossTracker from "../components/WinLossTracker";
 import Button from "../components/Button";
 
-export default function Results({ teams, gameMode }) {
+export default function Results({
+  teams,
+  record,
+  setRecord,
+  matchHistory,
+  setMatchHistory
+}) {
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  const userCount = state?.userCount || 1;
 
   /* -----------------------------
-     Resolve teams by game mode
+     Resolve Teams
   ------------------------------ */
 
-  const userTeam =
-    gameMode === "two-player" ? teams.player1 : teams.player1;
+  const userTeam = teams.player1;
 
-  const opponentTeamInitial =
-    gameMode === "two-player"
-      ? teams.player2
-      : getRandomPlayers(
-          players,
-          5,
-          teams.player1.map(p => p.id)
-        );
-
-  const [opponentTeam, setOpponentTeam] = useState(opponentTeamInitial);
+  const [opponentTeam, setOpponentTeam] = useState(() =>
+    userCount === 1
+      ? getRandomPlayers(players, 5, userTeam.map(p => p.id))
+      : teams.player2
+  );
 
   /* -----------------------------
-     Stat calculations
+     Stat Calculations
   ------------------------------ */
 
   const userTotals = useMemo(
@@ -43,6 +45,77 @@ export default function Results({ teams, gameMode }) {
   );
 
   /* -----------------------------
+     Category Comparison Logic
+  ------------------------------ */
+
+  function getMatchResult(user, opp) {
+    let userWins = 0;
+    let oppWins = 0;
+
+    const categories = [
+      ["fgPercent", true],
+      ["threePt", true],
+      ["ftPercent", true],
+      ["rebounds", true],
+      ["assists", true],
+      ["steals", true],
+      ["blocks", true],
+      ["turnovers", false], // lower is better
+      ["points", true]
+    ];
+
+    categories.forEach(([stat, higherIsBetter]) => {
+      const u = Number(user[stat]);
+      const o = Number(opp[stat]);
+
+      if (u === o) return;
+
+      if (higherIsBetter ? u > o : u < o) {
+        userWins++;
+      } else {
+        oppWins++;
+      }
+    });
+
+    return { userWins, oppWins };
+  }
+
+  const result = useMemo(
+    () => getMatchResult(userTotals, opponentTotals),
+    [userTotals, opponentTotals]
+  );
+
+  /* -----------------------------
+     Record + History Tracking
+  ------------------------------ */
+
+  useEffect(() => {
+    if (userCount !== 1) return;
+
+    // Prevent double-counting same matchup
+    const lastMatch = matchHistory[matchHistory.length - 1];
+    const currentSignature = JSON.stringify(opponentTeam.map(p => p.id));
+
+    if (lastMatch?.signature === currentSignature) return;
+
+    // Update record
+    setRecord(prev => ({
+      wins: prev.wins + result.userWins,
+      losses: prev.losses + result.oppWins
+    }));
+
+    // Save history
+    setMatchHistory(prev => [
+      ...prev,
+      {
+        opponent: opponentTeam,
+        result: `${result.userWins}-${result.oppWins}`,
+        signature: currentSignature
+      }
+    ]);
+  }, [opponentTeam]);
+
+  /* -----------------------------
      Handlers
   ------------------------------ */
 
@@ -53,7 +126,7 @@ export default function Results({ teams, gameMode }) {
 
   function renderTeamTable(team) {
     return (
-      <table border="1" cellPadding="5" style={{ width: "100%" }}>
+      <table>
         <thead>
           <tr>
             <th>Player</th>
@@ -95,47 +168,43 @@ export default function Results({ teams, gameMode }) {
   return (
     <div>
       {/* Navigation */}
-      <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <Button onClick={() => navigate("/")}>Back to Game Modes</Button>
+      <div className="button-row">
+        <Button onClick={() => navigate("/")}>
+          Back to Game Modes
+        </Button>
 
-        {gameMode === "single" && (
-          <Button onClick={nextOpponent}>Next Opponent</Button>
+        {userCount === 1 && (
+          <Button onClick={nextOpponent}>
+            Next Opponent
+          </Button>
         )}
       </div>
 
       <h1>
-        {gameMode === "two-player" ? "Head-to-Head Matchup" : "Matchup"}
+        {userCount === 1 ? "Matchup" : "Head-to-Head Matchup"}
       </h1>
 
-      {/* Team Tables */}
+      {/* Teams */}
       <div style={{ display: "flex", gap: "40px" }}>
         <div style={{ flex: 1 }}>
-          <h2>
-            {gameMode === "two-player" ? "Player 1 Team" : "Your Team"}
-          </h2>
+          <h2>{userCount === 1 ? "Your Team" : "Player 1"}</h2>
           {renderTeamTable(userTeam)}
         </div>
 
         <div style={{ flex: 1 }}>
-          <h2>
-            {gameMode === "two-player" ? "Player 2 Team" : "Opponent Team"}
-          </h2>
+          <h2>{userCount === 1 ? "Opponent" : "Player 2"}</h2>
           {renderTeamTable(opponentTeam)}
         </div>
       </div>
 
       {/* Totals */}
       <h2 style={{ marginTop: "30px" }}>Team Totals</h2>
-      <table border="1" cellPadding="6">
+      <table>
         <thead>
           <tr>
             <th>Category</th>
-            <th>
-              {gameMode === "two-player" ? "Player 1" : "You"}
-            </th>
-            <th>
-              {gameMode === "two-player" ? "Player 2" : "Opponent"}
-            </th>
+            <th>You</th>
+            <th>Opponent</th>
           </tr>
         </thead>
         <tbody>
@@ -149,30 +218,46 @@ export default function Results({ teams, gameMode }) {
             ["BLK", userTotals.blocks, opponentTotals.blocks],
             ["TOV", userTotals.turnovers, opponentTotals.turnovers],
             ["PTS", userTotals.points, opponentTotals.points]
-          ].map(([label, user, opp]) => (
+          ].map(([label, u, o]) => (
             <tr key={label}>
               <td>{label}</td>
-              <td>{user}</td>
-              <td>{opp}</td>
+              <td>{u}</td>
+              <td>{o}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Comparison */}
+      {/* Category Result */}
+      <h2>
+        Result: {result.userWins} - {result.oppWins}
+      </h2>
+
+      {/* Overall Record */}
+      {userCount === 1 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>
+            Overall Record: {record.wins} - {record.losses}
+          </h3>
+
+          <details>
+            <summary>Match History</summary>
+            <ul>
+              {matchHistory.map((match, index) => (
+                <li key={index}>
+                  {match.result} vs{" "}
+                  {match.opponent.map(p => p.name).join(", ")}
+                </li>
+              ))}
+            </ul>
+          </details>
+        </div>
+      )}
+
       <TeamComparison
         userTotals={userTotals}
         opponentTotals={opponentTotals}
       />
-
-      {/* Only track history in single-player */}
-      {gameMode === "single" && (
-        <WinLossTracker
-          userTotals={userTotals}
-          opponentTotals={opponentTotals}
-          opponentTeam={opponentTeam}
-        />
-      )}
     </div>
   );
 }
