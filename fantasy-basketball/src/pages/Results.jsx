@@ -1,11 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { players } from "../data/players";
 import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
 import Button from "../components/Button";
-import { useRef } from "react";
 
 export default function Results({
   teams,
@@ -22,9 +21,15 @@ export default function Results({
   const lastLoggedSignature = useRef(null);
 
   /* -----------------------------
+     Guard (prevents crashes)
+  ------------------------------ */
+  if (!teams?.player1 || teams.player1.length === 0) {
+    return <div>No team found. Go back and select players.</div>;
+  }
+
+  /* -----------------------------
      Resolve Teams
   ------------------------------ */
-
   const userTeam = teams.player1;
 
   const [opponentTeam, setOpponentTeam] = useState(() =>
@@ -36,7 +41,6 @@ export default function Results({
   /* -----------------------------
      Stat Calculations
   ------------------------------ */
-
   const userTotals = useMemo(
     () => calculateTeamTotals(userTeam),
     [userTeam]
@@ -50,7 +54,6 @@ export default function Results({
   /* -----------------------------
      Category Comparison Logic
   ------------------------------ */
-
   function getMatchResult(user, opp) {
     let userWins = 0;
     let oppWins = 0;
@@ -63,7 +66,7 @@ export default function Results({
       ["assists", true],
       ["steals", true],
       ["blocks", true],
-      ["turnovers", false], // lower is better
+      ["turnovers", false],
       ["points", true]
     ];
 
@@ -91,37 +94,34 @@ export default function Results({
   /* -----------------------------
      Record + History Tracking
   ------------------------------ */
+  useEffect(() => {
+    if (userCount !== 1) return;
 
-useEffect(() => {
-  if (gameMode !== "single") return;
+    const signature = opponentTeam.map(p => p.id).join("-");
 
-  const signature = opponentTeam.map(p => p.id).join("-");
+    if (lastLoggedSignature.current === signature) return;
 
-  // 🚫 Prevent duplicate logging of SAME matchup
-  if (lastLoggedSignature.current === signature) return;
+    lastLoggedSignature.current = signature;
 
-  lastLoggedSignature.current = signature;
+    const result = getMatchResult(userTotals, opponentTotals);
 
-  const result = getMatchupResult(userTotals, opponentTotals);
+    setRecord(prev => ({
+      wins: prev.wins + result.userWins,
+      losses: prev.losses + result.oppWins
+    }));
 
-  setRecord(prev => ({
-    wins: prev.wins + result.userWins,
-    losses: prev.losses + result.oppWins
-  }));
-
-  setMatchHistory(prev => [
-    ...prev,
-    {
-      opponent: opponentTeam,
-      result: `${result.userWins}-${result.oppWins}`
-    }
-  ]);
-}, [opponentTeam]);
+    setMatchHistory(prev => [
+      ...prev,
+      {
+        opponent: opponentTeam,
+        result: `${result.userWins}-${result.oppWins}`
+      }
+    ]);
+  }, [opponentTeam, userTotals, opponentTotals, userCount, setRecord, setMatchHistory]);
 
   /* -----------------------------
      Handlers
   ------------------------------ */
-
   function nextOpponent() {
     const userIds = userTeam.map(p => p.id);
     setOpponentTeam(getRandomPlayers(players, 5, userIds));
@@ -167,7 +167,6 @@ useEffect(() => {
   /* -----------------------------
      Render
   ------------------------------ */
-
   return (
     <div>
       {/* Navigation */}
@@ -231,12 +230,12 @@ useEffect(() => {
         </tbody>
       </table>
 
-      {/* Category Result */}
+      {/* Match Result */}
       <h2>
         Result: {result.userWins} - {result.oppWins}
       </h2>
 
-      {/* Overall Record */}
+      {/* Record + History (single player only) */}
       {userCount === 1 && (
         <div style={{ marginTop: "20px" }}>
           <h3>
