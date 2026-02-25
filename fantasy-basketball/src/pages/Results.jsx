@@ -5,6 +5,7 @@ import { getRandomPlayers } from "../utils/randomPlayers";
 import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
 import Button from "../components/Button";
+import { useRef } from "react";
 
 export default function Results({
   teams,
@@ -17,6 +18,8 @@ export default function Results({
   const { state } = useLocation();
 
   const userCount = state?.userCount || 1;
+
+  const hasLogged = useRef(false);
 
   /* -----------------------------
      Resolve Teams
@@ -89,31 +92,32 @@ export default function Results({
      Record + History Tracking
   ------------------------------ */
 
-  useEffect(() => {
-    if (userCount !== 1) return;
+useEffect(() => {
+  if (userCount !== 1) return;
 
-    // Prevent double-counting same matchup
-    const lastMatch = matchHistory[matchHistory.length - 1];
-    const currentSignature = JSON.stringify(opponentTeam.map(p => p.id));
+  // Prevent Strict Mode double-run
+  if (!hasLogged.current) {
+    hasLogged.current = true;
+  } else {
+    return;
+  }
 
-    if (lastMatch?.signature === currentSignature) return;
+  const currentSignature = JSON.stringify(opponentTeam.map(p => p.id));
 
-    // Update record
-    setRecord(prev => ({
-      wins: prev.wins + result.userWins,
-      losses: prev.losses + result.oppWins
-    }));
+  setRecord(prev => ({
+    wins: prev.wins + result.userWins,
+    losses: prev.losses + result.oppWins
+  }));
 
-    // Save history
-    setMatchHistory(prev => [
-      ...prev,
-      {
-        opponent: opponentTeam,
-        result: `${result.userWins}-${result.oppWins}`,
-        signature: currentSignature
-      }
-    ]);
-  }, [opponentTeam]);
+  setMatchHistory(prev => [
+    ...prev,
+    {
+      opponent: opponentTeam,
+      result: `${result.userWins}-${result.oppWins}`,
+      signature: currentSignature
+    }
+  ]);
+}, [opponentTeam]);
 
   /* -----------------------------
      Handlers
