@@ -19,7 +19,7 @@ export default function Results({
 
   const userCount = state?.userCount || 1;
 
-  const hasLogged = useRef(false);
+  const lastLoggedSignature = useRef(null);
 
   /* -----------------------------
      Resolve Teams
@@ -93,16 +93,16 @@ export default function Results({
   ------------------------------ */
 
 useEffect(() => {
-  if (userCount !== 1) return;
+  if (gameMode !== "single") return;
 
-  // Prevent Strict Mode double-run
-  if (!hasLogged.current) {
-    hasLogged.current = true;
-  } else {
-    return;
-  }
+  const signature = opponentTeam.map(p => p.id).join("-");
 
-  const currentSignature = JSON.stringify(opponentTeam.map(p => p.id));
+  // 🚫 Prevent duplicate logging of SAME matchup
+  if (lastLoggedSignature.current === signature) return;
+
+  lastLoggedSignature.current = signature;
+
+  const result = getMatchupResult(userTotals, opponentTotals);
 
   setRecord(prev => ({
     wins: prev.wins + result.userWins,
@@ -113,8 +113,7 @@ useEffect(() => {
     ...prev,
     {
       opponent: opponentTeam,
-      result: `${result.userWins}-${result.oppWins}`,
-      signature: currentSignature
+      result: `${result.userWins}-${result.oppWins}`
     }
   ]);
 }, [opponentTeam]);
