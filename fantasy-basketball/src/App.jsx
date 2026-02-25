@@ -5,6 +5,9 @@ import GameModeSelector from "./pages/GameModeSelector";
 import PlayerSelector from "./pages/PlayerSelector";
 import Results from "./pages/Results";
 
+const [record, setRecord] = useState({ wins: 0, losses: 0 });
+const [matchHistory, setMatchHistory] = useState([]);
+
 function App() {
   const [gameMode, setGameMode] = useState(null); // "single" | "two-player"
   const [currentPlayer, setCurrentPlayer] = useState(1);
