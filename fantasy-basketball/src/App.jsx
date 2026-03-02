@@ -23,7 +23,6 @@ function App() {
           path="/"
           element={
             <GameModeSelector
-              setGameMode={setGameMode}
               setTeams={setTeams}
               setCurrentPlayer={setCurrentPlayer}
               setRecord={setRecord}
@@ -31,7 +30,7 @@ function App() {
             />
           }
         />
-        
+
         <Route
           path="/select"
           element={
