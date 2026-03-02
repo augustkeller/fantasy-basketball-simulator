@@ -30,7 +30,7 @@ export default function Results({
   /* -----------------------------
      Resolve Teams
   ------------------------------ */
-  const userTeam = teams.player1;
+  const userTeam = teams[0] || [];
 
   const [opponentTeam, setOpponentTeam] = useState(() =>
     userCount === 1
