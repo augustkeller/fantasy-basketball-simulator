@@ -77,7 +77,11 @@ export default function PlayerSelector({ teams, setTeams }) {
 
   return (
     <div>
-      <h1>{`Player ${currentUser}: Select 5 Players`}</h1>
+      <h1>
+        {userCount === 1
+          ? "Select 5 Players"
+          : `Player ${currentUser}: Select 5 Players`}
+      </h1>
 
       <SeasonRangeSelector
         startYear={startYear}
