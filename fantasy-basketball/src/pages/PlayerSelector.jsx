@@ -5,15 +5,17 @@ import { getRandomPlayers } from "../utils/randomPlayers";
 import Button from "../components/Button";
 import SeasonRangeSelector from "../components/SeasonRangeSelector";
 
-export default function PlayerSelector({ teams, setTeams }) {
+export default function PlayerSelector({
+  teams,
+  setTeams,
+  currentPlayer,
+  setCurrentPlayer
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
   // Get user count from GameModeSelector page
   const userCount = location.state?.userCount || 1;
-
-  // Track which user is currently drafting
-  const [currentUser, setCurrentUser] = useState(1);
 
   // Draft state
   const [selected, setSelected] = useState([]);
@@ -43,7 +45,7 @@ export default function PlayerSelector({ teams, setTeams }) {
 
     setRandomPlayers(randomSelection);
     setSelected([]);
-  }, [startYear, endYear, currentUser]);
+  }, [startYear, endYear, currentPlayer]);
 
   function togglePlayer(player) {
     setSelected(prev =>
@@ -55,21 +57,20 @@ export default function PlayerSelector({ teams, setTeams }) {
     );
   }
 
-  function handleSubmit() {
-    const updatedTeams = [...teams];
+function handleSubmit() {
+  const updatedTeams = [...teams];
 
-    // Ensure array is large enough
-    updatedTeams[currentUser - 1] = selected;
+  updatedTeams[currentPlayer - 1] = selected;
 
-    setTeams(updatedTeams);
+  setTeams(updatedTeams);
 
-    if (currentUser < userCount) {
-      setSelected([]);
-      setCurrentUser(prev => prev + 1);
-    } else {
-      navigate("/results", { state: { userCount } });
-    }
+  if (currentPlayer < userCount) {
+    setSelected([]);
+    setCurrentPlayer(prev => prev + 1);
+  } else {
+    navigate("/results", { state: { userCount } });
   }
+}
 
   function handleBack() {
     navigate("/");
@@ -80,7 +81,7 @@ export default function PlayerSelector({ teams, setTeams }) {
       <h1>
         {userCount === 1
           ? "Select 5 Players"
-          : `Player ${currentUser}: Select 5 Players`}
+          : `Player ${currentPlayer}: Select 5 Players`}
       </h1>
 
       <SeasonRangeSelector
@@ -143,7 +144,7 @@ export default function PlayerSelector({ teams, setTeams }) {
           onClick={handleSubmit}
         >
           {currentUser < userCount
-            ? `Confirm Player ${currentUser} Team`
+            ? `Confirm Player ${currentPlayer} Team`
             : "Submit Final Team"}
         </Button>
 
