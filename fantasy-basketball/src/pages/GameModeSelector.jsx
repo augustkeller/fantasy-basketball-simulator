@@ -5,7 +5,7 @@ import UserCountSelector from "../components/UserCountSelector";
 
 export default function GameModeSelector({
   setTeams,
-  setCurrentPlayer,
+  setCurrentUser,
   setRecord,
   setMatchHistory
 }) {
@@ -19,7 +19,7 @@ export default function GameModeSelector({
       player2: []
     });
 
-    setCurrentPlayer(1);
+    setCurrentUser(1);
 
     setRecord({ wins: 0, losses: 0 });
     setMatchHistory([]);
