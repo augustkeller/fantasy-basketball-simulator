@@ -58,7 +58,7 @@ export default function PlayerSelector({
   }
 
 function handleSubmit() {
-  const updatedTeams = [...teams];
+  const updatedTeams = Array.isArray(teams) ? [...teams] : [[], []];
 
   updatedTeams[currentUser - 1] = selected;
 
