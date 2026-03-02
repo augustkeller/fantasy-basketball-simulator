@@ -56,18 +56,18 @@ export default function PlayerSelector({ teams, setTeams }) {
   }
 
   function handleSubmit() {
-    // Save team dynamically (player1, player2, etc.)
-    setTeams(prev => ({
-      ...prev,
-      [`player${currentUser}`]: selected
-    }));
+    const updatedTeams = [...teams];
 
-    // Move to next user or go to results
+    // Ensure array is large enough
+    updatedTeams[currentUser - 1] = selected;
+
+    setTeams(updatedTeams);
+
     if (currentUser < userCount) {
       setSelected([]);
       setCurrentUser(prev => prev + 1);
     } else {
-      navigate("/results");
+      navigate("/results", { state: { userCount } });
     }
   }
 
