@@ -14,10 +14,7 @@ export default function GameModeSelector({
 
   function startGame() {
     // ✅ RESET EVERYTHING
-    setTeams({
-      player1: [],
-      player2: []
-    });
+    setTeams([[], []]);
 
     setCurrentUser(1);
 
