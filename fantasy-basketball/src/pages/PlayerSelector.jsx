@@ -8,8 +8,8 @@ import SeasonRangeSelector from "../components/SeasonRangeSelector";
 export default function PlayerSelector({
   teams,
   setTeams,
-  currentPlayer,
-  setCurrentPlayer
+  currentUser,
+  setCurrentUser
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,7 +45,7 @@ export default function PlayerSelector({
 
     setRandomPlayers(randomSelection);
     setSelected([]);
-  }, [startYear, endYear, currentPlayer]);
+  }, [startYear, endYear, currentUser]);
 
   function togglePlayer(player) {
     setSelected(prev =>
@@ -60,13 +60,13 @@ export default function PlayerSelector({
 function handleSubmit() {
   const updatedTeams = [...teams];
 
-  updatedTeams[currentPlayer - 1] = selected;
+  updatedTeams[currentUser - 1] = selected;
 
   setTeams(updatedTeams);
 
-  if (currentPlayer < userCount) {
+  if (currentUser < userCount) {
     setSelected([]);
-    setCurrentPlayer(prev => prev + 1);
+    setCurrentUser(prev => prev + 1);
   } else {
     navigate("/results", { state: { userCount } });
   }
@@ -81,7 +81,7 @@ function handleSubmit() {
       <h1>
         {userCount === 1
           ? "Select 5 Players"
-          : `Player ${currentPlayer}: Select 5 Players`}
+          : `Player ${currentUser}: Select 5 Players`}
       </h1>
 
       <SeasonRangeSelector
@@ -144,7 +144,7 @@ function handleSubmit() {
           onClick={handleSubmit}
         >
           {currentUser < userCount
-            ? `Confirm Player ${currentPlayer} Team`
+            ? `Confirm Player ${currentUser} Team`
             : "Submit Final Team"}
         </Button>
 
