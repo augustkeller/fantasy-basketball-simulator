@@ -7,10 +7,7 @@ import Results from "./pages/Results";
 
 function App() {
   const [currentPlayer, setCurrentPlayer] = useState(1);
-  const [teams, setTeams] = useState({
-    player1: [],
-    player2: []
-  });
+const [teams, setTeams] = useState([]);
 
   // ✅ Single-player persistent state
   const [record, setRecord] = useState({ wins: 0, losses: 0 });
