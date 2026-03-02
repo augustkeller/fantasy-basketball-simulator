@@ -24,9 +24,6 @@ export default function GameModeSelector({
     setRecord({ wins: 0, losses: 0 });
     setMatchHistory([]);
 
-    // optional (if still using it)
-    setGameMode(userCount === 1 ? "single" : "multi");
-
     navigate("/select", { state: { userCount } });
   }
 
