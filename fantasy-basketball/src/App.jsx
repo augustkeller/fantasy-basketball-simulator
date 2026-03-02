@@ -6,7 +6,7 @@ import PlayerSelector from "./pages/PlayerSelector";
 import Results from "./pages/Results";
 
 function App() {
-  const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [currentUser, setCurrentUser] = useState(1);
   const [teams, setTeams] = useState([]);
 
   // ✅ Single-player persistent state
@@ -21,7 +21,7 @@ function App() {
           element={
             <GameModeSelector
               setTeams={setTeams}
-              setCurrentPlayer={setCurrentPlayer}
+              setCurrentUser={setCurrentUser}
               setRecord={setRecord}
               setMatchHistory={setMatchHistory}
             />
@@ -32,8 +32,8 @@ function App() {
           path="/select"
           element={
             <PlayerSelector
-              currentPlayer={currentPlayer}
-              setCurrentPlayer={setCurrentPlayer}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
               teams={teams}
               setTeams={setTeams}
             />
