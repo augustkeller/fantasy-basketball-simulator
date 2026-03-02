@@ -4,7 +4,6 @@ import Button from "../components/Button";
 import UserCountSelector from "../components/UserCountSelector";
 
 export default function GameModeSelector({
-  setGameMode,
   setTeams,
   setCurrentPlayer,
   setRecord,
