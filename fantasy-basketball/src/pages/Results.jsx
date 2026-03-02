@@ -23,9 +23,9 @@ export default function Results({
   /* -----------------------------
      Guard (prevents crashes)
   ------------------------------ */
-  if (!teams?.player1 || teams.player1.length === 0) {
-    return <div>No team found. Go back and select players.</div>;
-  }
+if (!teams || !teams[0] || teams[0].length === 0) {
+  return <div>No team found. Go back and select players.</div>;
+}
 
   /* -----------------------------
      Resolve Teams
