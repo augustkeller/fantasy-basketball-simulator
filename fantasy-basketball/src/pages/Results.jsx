@@ -32,11 +32,11 @@ export default function Results({
   ------------------------------ */
   const userTeam = teams[0] || [];
 
-  const [opponentTeam, setOpponentTeam] = useState(() =>
-    userCount === 1
-      ? getRandomPlayers(players, 5, userTeam.map(p => p.id))
-      : teams.player2
-  );
+const [opponentTeam, setOpponentTeam] = useState(() =>
+  userCount === 1
+    ? getRandomPlayers(players, 5, userTeam.map(p => p.id))
+    : teams[1] || []
+);
 
   /* -----------------------------
      Stat Calculations
