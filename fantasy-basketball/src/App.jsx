@@ -21,9 +21,17 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<GameModeSelector />}
+          element={
+            <GameModeSelector
+              setGameMode={setGameMode}
+              setTeams={setTeams}
+              setCurrentPlayer={setCurrentPlayer}
+              setRecord={setRecord}
+              setMatchHistory={setMatchHistory}
+            />
+          }
         />
-
+        
         <Route
           path="/select"
           element={
