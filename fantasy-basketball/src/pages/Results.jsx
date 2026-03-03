@@ -234,7 +234,10 @@ export default function Results({
         )}
 
         {isMultiPlayer && (
-          <Button onClick={nextMatchup}>
+          <Button 
+            onClick={nextMatchup}
+            disabled={matchIndex >= matchups.length - 1}
+          >
             Next Matchup
           </Button>
         )}
