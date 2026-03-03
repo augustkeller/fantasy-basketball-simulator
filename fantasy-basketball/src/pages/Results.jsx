@@ -6,6 +6,18 @@ import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
 import Button from "../components/Button";
 
+function generateMatchups(teams) {
+  const matchups = [];
+
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = i + 1; j < teams.length; j++) {
+      matchups.push([i, j]);
+    }
+  }
+
+  return matchups;
+}
+
 export default function Results({
   teams,
   record,
