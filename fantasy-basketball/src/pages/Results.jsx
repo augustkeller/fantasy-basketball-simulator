@@ -174,6 +174,39 @@ export default function Results({
   }, [teamB, totalsA, totalsB, isSinglePlayer, setRecord, setMatchHistory]);
 
   /* -----------------------------
+     Record Tracking (mutliplayer)
+  ------------------------------ */
+  useEffect(() => {
+    if (!isMultiPlayer) return;
+
+    // Prevent double-counting
+    if (matchIndex === lastMatchIndexRecorded.current) return;
+
+    lastMatchIndexRecorded.current = matchIndex;
+
+    const [a, b] = matchups[matchIndex] || [];
+    if (a === undefined || b === undefined) return;
+
+    const result = getMatchResult(totalsA, totalsB);
+
+    setStandings(prev => {
+      const updated = [...prev];
+
+      if (result.userWins > result.oppWins) {
+        updated[a].wins += 1;
+        updated[b].losses += 1;
+      } else if (result.oppWins > result.userWins) {
+        updated[b].wins += 1;
+        updated[a].losses += 1;
+      }
+      // ties do nothing (optional: handle later)
+
+      return updated;
+    });
+
+  }, [matchIndex, matchups, totalsA, totalsB, isMultiPlayer]);
+
+  /* -----------------------------
      Handlers
   ------------------------------ */
   function nextOpponent() {
