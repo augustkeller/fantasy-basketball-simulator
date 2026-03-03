@@ -6,6 +6,9 @@ import { calculateTeamTotals } from "../utils/teamStats";
 import TeamComparison from "../components/TeamComparison";
 import Button from "../components/Button";
 
+/* -----------------------------
+   Round Robin Generator
+------------------------------ */
 function generateMatchups(teams) {
   const matchups = [];
 
@@ -30,41 +33,76 @@ export default function Results({
 
   const userCount = state?.userCount || 1;
 
+  const isSinglePlayer = userCount === 1;
+  const isTwoPlayer = userCount === 2;
+  const isMultiPlayer = userCount > 2;
+
   const lastLoggedSignature = useRef(null);
 
   /* -----------------------------
-     Guard (prevents crashes)
+     Guards
   ------------------------------ */
-if (!teams || !teams[0] || teams[0].length === 0) {
-  return <div>No team found. Go back and select players.</div>;
-}
+  if (!teams || !teams[0] || teams[0].length === 0) {
+    return <div>No team found. Go back and select players.</div>;
+  }
+
+  /* -----------------------------
+     SINGLE PLAYER (unchanged)
+  ------------------------------ */
+  const [opponentTeam, setOpponentTeam] = useState(() =>
+    isSinglePlayer
+      ? getRandomPlayers(players, 5, teams[0].map(p => p.id))
+      : []
+  );
+
+  /* -----------------------------
+     ROUND ROBIN SETUP
+  ------------------------------ */
+  const matchups = useMemo(
+    () => (isMultiPlayer ? generateMatchups(teams) : []),
+    [teams, isMultiPlayer]
+  );
+
+  const [matchIndex, setMatchIndex] = useState(0);
 
   /* -----------------------------
      Resolve Teams
   ------------------------------ */
-  const userTeam = teams[0] || [];
+  let teamA, teamB, labelA, labelB;
 
-const [opponentTeam, setOpponentTeam] = useState(() =>
-  userCount === 1
-    ? getRandomPlayers(players, 5, userTeam.map(p => p.id))
-    : teams[1] || []
-);
+  if (isSinglePlayer) {
+    teamA = teams[0];
+    teamB = opponentTeam;
+    labelA = "Your Team";
+    labelB = "Opponent";
+  } else if (isTwoPlayer) {
+    teamA = teams[0];
+    teamB = teams[1];
+    labelA = "Player 1";
+    labelB = "Player 2";
+  } else {
+    const [a, b] = matchups[matchIndex] || [0, 1];
+    teamA = teams[a];
+    teamB = teams[b];
+    labelA = `Team ${a + 1}`;
+    labelB = `Team ${b + 1}`;
+  }
 
   /* -----------------------------
      Stat Calculations
   ------------------------------ */
-  const userTotals = useMemo(
-    () => calculateTeamTotals(userTeam),
-    [userTeam]
+  const totalsA = useMemo(
+    () => calculateTeamTotals(teamA),
+    [teamA]
   );
 
-  const opponentTotals = useMemo(
-    () => calculateTeamTotals(opponentTeam),
-    [opponentTeam]
+  const totalsB = useMemo(
+    () => calculateTeamTotals(teamB),
+    [teamB]
   );
 
   /* -----------------------------
-     Category Comparison Logic
+     Match Result Logic
   ------------------------------ */
   function getMatchResult(user, opp) {
     let userWins = 0;
@@ -99,23 +137,22 @@ const [opponentTeam, setOpponentTeam] = useState(() =>
   }
 
   const result = useMemo(
-    () => getMatchResult(userTotals, opponentTotals),
-    [userTotals, opponentTotals]
+    () => getMatchResult(totalsA, totalsB),
+    [totalsA, totalsB]
   );
 
   /* -----------------------------
-     Record + History Tracking
+     Record Tracking (single only)
   ------------------------------ */
   useEffect(() => {
-    if (userCount !== 1) return;
+    if (!isSinglePlayer) return;
 
-    const signature = opponentTeam.map(p => p.id).join("-");
-
+    const signature = teamB.map(p => p.id).join("-");
     if (lastLoggedSignature.current === signature) return;
 
     lastLoggedSignature.current = signature;
 
-    const result = getMatchResult(userTotals, opponentTotals);
+    const result = getMatchResult(totalsA, totalsB);
 
     setRecord(prev => ({
       wins: prev.wins + result.userWins,
@@ -125,18 +162,22 @@ const [opponentTeam, setOpponentTeam] = useState(() =>
     setMatchHistory(prev => [
       ...prev,
       {
-        opponent: opponentTeam,
+        opponent: teamB,
         result: `${result.userWins}-${result.oppWins}`
       }
     ]);
-  }, [opponentTeam, userTotals, opponentTotals, userCount, setRecord, setMatchHistory]);
+  }, [teamB, totalsA, totalsB, isSinglePlayer, setRecord, setMatchHistory]);
 
   /* -----------------------------
      Handlers
   ------------------------------ */
   function nextOpponent() {
-    const userIds = userTeam.map(p => p.id);
+    const userIds = teams[0].map(p => p.id);
     setOpponentTeam(getRandomPlayers(players, 5, userIds));
+  }
+
+  function nextMatchup() {
+    setMatchIndex(prev => (prev + 1) % matchups.length);
   }
 
   function renderTeamTable(team) {
@@ -181,74 +222,75 @@ const [opponentTeam, setOpponentTeam] = useState(() =>
   ------------------------------ */
   return (
     <div>
-      {/* Navigation */}
       <div className="button-row">
         <Button onClick={() => navigate("/")}>
           Back to Game Modes
         </Button>
 
-        {userCount === 1 && (
+        {isSinglePlayer && (
           <Button onClick={nextOpponent}>
             Next Opponent
+          </Button>
+        )}
+
+        {isMultiPlayer && (
+          <Button onClick={nextMatchup}>
+            Next Matchup
           </Button>
         )}
       </div>
 
       <h1>
-        {userCount === 1 ? "Matchup" : "Head-to-Head Matchup"}
+        {isSinglePlayer ? "Matchup" : "Head-to-Head Matchup"}
       </h1>
 
-      {/* Teams */}
       <div style={{ display: "flex", gap: "40px" }}>
         <div style={{ flex: 1 }}>
-          <h2>{userCount === 1 ? "Your Team" : "Player 1"}</h2>
-          {renderTeamTable(userTeam)}
+          <h2>{labelA}</h2>
+          {renderTeamTable(teamA)}
         </div>
 
         <div style={{ flex: 1 }}>
-          <h2>{userCount === 1 ? "Opponent" : "Player 2"}</h2>
-          {renderTeamTable(opponentTeam)}
+          <h2>{labelB}</h2>
+          {renderTeamTable(teamB)}
         </div>
       </div>
 
-      {/* Totals */}
       <h2 style={{ marginTop: "30px" }}>Team Totals</h2>
       <table>
         <thead>
           <tr>
             <th>Category</th>
-            <th>You</th>
-            <th>Opponent</th>
+            <th>{labelA}</th>
+            <th>{labelB}</th>
           </tr>
         </thead>
         <tbody>
           {[
-            ["FG%", userTotals.fgPercent, opponentTotals.fgPercent],
-            ["3P", userTotals.threePt, opponentTotals.threePt],
-            ["FT%", userTotals.ftPercent, opponentTotals.ftPercent],
-            ["TRB", userTotals.rebounds, opponentTotals.rebounds],
-            ["AST", userTotals.assists, opponentTotals.assists],
-            ["STL", userTotals.steals, opponentTotals.steals],
-            ["BLK", userTotals.blocks, opponentTotals.blocks],
-            ["TOV", userTotals.turnovers, opponentTotals.turnovers],
-            ["PTS", userTotals.points, opponentTotals.points]
-          ].map(([label, u, o]) => (
+            ["FG%", totalsA.fgPercent, totalsB.fgPercent],
+            ["3P", totalsA.threePt, totalsB.threePt],
+            ["FT%", totalsA.ftPercent, totalsB.ftPercent],
+            ["TRB", totalsA.rebounds, totalsB.rebounds],
+            ["AST", totalsA.assists, totalsB.assists],
+            ["STL", totalsA.steals, totalsB.steals],
+            ["BLK", totalsA.blocks, totalsB.blocks],
+            ["TOV", totalsA.turnovers, totalsB.turnovers],
+            ["PTS", totalsA.points, totalsB.points]
+          ].map(([label, a, b]) => (
             <tr key={label}>
               <td>{label}</td>
-              <td>{u}</td>
-              <td>{o}</td>
+              <td>{a}</td>
+              <td>{b}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Match Result */}
       <h2>
         Result: {result.userWins} - {result.oppWins}
       </h2>
 
-      {/* Record + History (single player only) */}
-      {userCount === 1 && (
+      {isSinglePlayer && (
         <div style={{ marginTop: "20px" }}>
           <h3>
             Overall Record: {record.wins} - {record.losses}
@@ -269,8 +311,8 @@ const [opponentTeam, setOpponentTeam] = useState(() =>
       )}
 
       <TeamComparison
-        userTotals={userTotals}
-        opponentTotals={opponentTotals}
+        userTotals={totalsA}
+        opponentTotals={totalsB}
       />
     </div>
   );
