@@ -14,7 +14,7 @@ export default function GameModeSelector({
 
   function startGame() {
     // ✅ RESET EVERYTHING
-    setTeams([[], []]);
+    setTeams(Array.from({ length: userCount }, () => []));
 
     setCurrentUser(1);
 
