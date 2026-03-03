@@ -177,7 +177,7 @@ export default function Results({
   }
 
   function nextMatchup() {
-    setMatchIndex(prev => (prev + 1) % matchups.length);
+    setMatchIndex(prev => prev + 1);
   }
 
   function renderTeamTable(team) {
