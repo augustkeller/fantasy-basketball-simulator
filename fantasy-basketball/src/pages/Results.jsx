@@ -174,7 +174,7 @@ export default function Results({
   }, [teamB, totalsA, totalsB, isSinglePlayer, setRecord, setMatchHistory]);
 
   /* -----------------------------
-     Record Tracking (mutliplayer)
+     Standings Tracking (mutliplayer)
   ------------------------------ */
   useEffect(() => {
     if (!isMultiPlayer) return;
@@ -354,6 +354,30 @@ export default function Results({
               ))}
             </ul>
           </details>
+        </div>
+      )}
+
+      {isMultiPlayer && (
+        <div style={{ marginTop: "30px" }}>
+          <h2>Standings</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Wins</th>
+                <th>Losses</th>
+              </tr>
+            </thead>
+            <tbody>
+              {standings.map((team, index) => (
+                <tr key={index}>
+                  <td>Team {index + 1}</td>
+                  <td>{team.wins}</td>
+                  <td>{team.losses}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
