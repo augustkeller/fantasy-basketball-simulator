@@ -39,6 +39,10 @@ export default function Results({
 
   const lastLoggedSignature = useRef(null);
 
+  const [standings, setStandings] = useState(() =>
+    teams.map(() => ({ wins: 0, losses: 0 }))
+  );
+
   /* -----------------------------
      Guards
   ------------------------------ */
