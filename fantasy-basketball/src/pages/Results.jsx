@@ -247,6 +247,12 @@ export default function Results({
         {isSinglePlayer ? "Matchup" : "Head-to-Head Matchup"}
       </h1>
 
+      {isMultiPlayer && (
+        <p>
+          Match {matchIndex + 1} of {matchups.length}
+        </p>
+      )}
+
       <div style={{ display: "flex", gap: "40px" }}>
         <div style={{ flex: 1 }}>
           <h2>{labelA}</h2>
