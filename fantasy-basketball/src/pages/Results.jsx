@@ -42,6 +42,7 @@ export default function Results({
   );
 
   const lastLoggedSignature = useRef(null);
+  const lastMatchIndexRecorded = useRef(-1);
 
   /* -----------------------------
      Guards
