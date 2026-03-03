@@ -37,11 +37,11 @@ export default function Results({
   const isTwoPlayer = userCount === 2;
   const isMultiPlayer = userCount > 2;
 
-  const lastLoggedSignature = useRef(null);
-
   const [standings, setStandings] = useState(() =>
     teams.map(() => ({ wins: 0, losses: 0 }))
   );
+
+  const lastLoggedSignature = useRef(null);
 
   /* -----------------------------
      Guards
