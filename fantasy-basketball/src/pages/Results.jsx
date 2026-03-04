@@ -31,7 +31,7 @@ export default function Results({
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const userCount = state?.userCount || 1;
+  const userCount = teams.length;
 
   const isSinglePlayer = userCount === 1;
   const isTwoPlayer = userCount === 2;
