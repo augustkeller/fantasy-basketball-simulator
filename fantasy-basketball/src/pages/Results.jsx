@@ -386,7 +386,7 @@ export default function Results({
                 .sort((a, b) => b.wins - a.wins)
                 .map(team => (
                 <tr key={index}>
-                  <td>Team {index + 1}</td>
+                  <td>Team {team.index + 1}</td>
                   <td>{team.wins}</td>
                   <td>{team.losses}</td>
                 </tr>
