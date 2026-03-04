@@ -176,6 +176,16 @@ export default function Results({
   }, [teamB, totalsA, totalsB, isSinglePlayer, setRecord, setMatchHistory]);
 
   /* -----------------------------
+    Reset Standings when teams change
+  ------------------------------ */
+  useEffect(() => {
+    if (!isMultiPlayer) return;
+
+    setStandings(teams.map(() => ({ wins: 0, losses: 0 })));
+    lastMatchIndexRecorded.current = -1;
+  }, [teams, isMultiPlayer]);
+
+  /* -----------------------------
      Standings Tracking (mutliplayer)
   ------------------------------ */
   useEffect(() => {
