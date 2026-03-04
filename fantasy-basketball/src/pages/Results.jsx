@@ -381,7 +381,10 @@ export default function Results({
               </tr>
             </thead>
             <tbody>
-              {standings.map((team, index) => (
+              {[...standings]
+                .map((team, index) => ({ ...team, index }))
+                .sort((a, b) => b.wins - a.wins)
+                .map(team => (
                 <tr key={index}>
                   <td>Team {index + 1}</td>
                   <td>{team.wins}</td>
