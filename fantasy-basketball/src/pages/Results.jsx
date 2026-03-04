@@ -157,9 +157,7 @@ export default function Results({
 
     lastLoggedSignature.current = signature;
 
-    const teamAStats = calculateTeamTotals(teams[a]);
-    const teamBStats = calculateTeamTotals(teams[b]);
-    const result = getMatchResult(teamAStats, teamBStats);
+    const result = getMatchResult(totalsA, totalsB);
 
     setRecord(prev => ({
       wins: prev.wins + result.userWins,
@@ -199,7 +197,9 @@ export default function Results({
     const [a, b] = matchups[matchIndex] || [];
     if (a === undefined || b === undefined) return;
 
-    const result = getMatchResult(totalsA, totalsB);
+    const teamAStats = calculateTeamTotals(teams[a]);
+    const teamBStats = calculateTeamTotals(teams[b]);
+    const result = getMatchResult(teamAStats, teamBStats);
 
     setStandings(prev => {
       const updated = [...prev];
