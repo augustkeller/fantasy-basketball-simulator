@@ -157,7 +157,9 @@ export default function Results({
 
     lastLoggedSignature.current = signature;
 
-    const result = getMatchResult(totalsA, totalsB);
+    const teamAStats = calculateTeamTotals(teams[a]);
+    const teamBStats = calculateTeamTotals(teams[b]);
+    const result = getMatchResult(teamAStats, teamBStats);
 
     setRecord(prev => ({
       wins: prev.wins + result.userWins,
